@@ -12,6 +12,7 @@ import DashboardPage from './pages/DashboardPage';
 import DashboardOnboardingPage from './pages/DashboardOnboardingPage';
 import DashboardJoinPage from './pages/DashboardJoinPage';
 import DashboardTeamPage from './pages/DashboardTeamPage';
+import DashboardPurchasePage from './pages/DashboardPurchasePage';
 import './index.css';
 
 function Root() {
@@ -34,6 +35,7 @@ function Root() {
           <Route path="/dashboard/onboarding" element={<DashboardOnboardingPage session={session} />} />
           <Route path="/dashboard/rejoindre" element={<DashboardJoinPage session={session} />} />
           <Route path="/dashboard/equipe" element={<DashboardTeamPage session={session} />} />
+          <Route path="/dashboard/acheter" element={<DashboardPurchasePage session={session} />} />
         </Routes>
       </BrowserRouter>
     </SessionContext.Provider>
