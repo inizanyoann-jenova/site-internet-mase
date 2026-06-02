@@ -212,6 +212,58 @@ export default function HomePage() {
         />
       )}
 
+      {/* Comment ça marche — Politique SSE */}
+      <section
+        className="px-6 py-14"
+        style={{ backgroundColor: 'var(--mase-card-strong)' }}
+      >
+        <p className="mb-10 text-center text-xs font-bold uppercase tracking-widest text-[var(--mase-muted)]">
+          Comment fonctionne la Politique SSE
+        </p>
+        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-3">
+          {[
+            { icon: '📋', step: '1 — Diagnostic', desc: '~20 questions SWOT + PESTEL SSE' },
+            { icon: '⚡', step: '2 — Génération', desc: 'Politique personnalisée à votre profil' },
+            { icon: '📥', step: '3 — Téléchargement', desc: 'DOCX + PDF prêts à dater et signer' },
+          ].map(({ icon, step, desc }) => (
+            <div
+              key={step}
+              className="rounded-2xl bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+            >
+              <div className="mb-2 text-3xl">{icon}</div>
+              <div className="text-sm font-semibold text-[var(--mase-heading)]">{step}</div>
+              <div className="mt-1 text-xs text-[var(--mase-muted)]">{desc}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Ce que contient le document */}
+      <section className="bg-white px-6 py-14">
+        <p className="mb-10 text-center text-xs font-bold uppercase tracking-widest text-[var(--mase-muted)]">
+          Ce que contient le document
+        </p>
+        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2">
+          {[
+            'Préambule & engagement employeur',
+            '6 principes essentiels SSE (§1.2.1)',
+            'Engagements Sécurité, Santé, Environnement (§1.2.4/5/6)',
+            'Axes prioritaires personnalisés',
+            "Démarche d'amélioration continue",
+            'Date + signature employeur (§1.2.2)',
+          ].map(item => (
+            <div
+              key={item}
+              className="flex items-center gap-3 rounded-xl px-4 py-3"
+              style={{ backgroundColor: '#f0f7ff' }}
+            >
+              <span className="text-base font-bold text-[var(--mase-primary)]">✓</span>
+              <span className="text-sm text-slate-700">{item}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Footer provisoire */}
       <footer
         className="px-6 py-4 text-center"
