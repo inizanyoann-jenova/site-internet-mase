@@ -132,7 +132,8 @@ export function AbsencesView() {
               <button onClick={() => setModal(null)} className="rounded-lg border px-4 py-2 text-sm text-slate-500 hover:bg-slate-50">Annuler</button>
               <button
                 onClick={confirmAbsence}
-                className="rounded-lg px-4 py-2 text-sm font-semibold text-white"
+                disabled={!reason}
+                className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ background: '#e67e22' }}
               >
                 Déclarer absent
