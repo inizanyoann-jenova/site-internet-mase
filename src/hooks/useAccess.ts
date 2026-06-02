@@ -37,12 +37,16 @@ export function useAccess(session: Session | null): AccessState & { refetch: () 
           .maybeSingle(),
       ]);
 
+      console.log('[useAccess] user_id:', session.user.id);
+      console.log('[useAccess] purchase:', purchaseResult);
+
       setState({
         hasPurchase: !!purchaseResult.data,
         isLoading: false,
         savedAnswers: (progressResult.data?.answers as Record<string, string>) ?? null,
       });
-    } catch {
+    } catch (err) {
+      console.error('[useAccess] erreur:', err);
       setState({ hasPurchase: false, isLoading: false, savedAnswers: null });
     }
   }, [session]);
