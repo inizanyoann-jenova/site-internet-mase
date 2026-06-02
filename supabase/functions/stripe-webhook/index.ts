@@ -48,7 +48,9 @@ Deno.serve(async (req) => {
     if (DASHBOARD_SLUGS.includes(toolSlug)) {
       // Créer la company et le membership admin
       const subscriptionStatus = session.mode === 'subscription' ? 'active' : 'lifetime';
-      const stripeCustomerId = typeof session.customer === 'string' ? session.customer : null;
+      const stripeCustomerId = typeof session.customer === 'string'
+        ? session.customer
+        : session.customer?.id ?? null;
 
       const { data: company, error: companyErr } = await supabase
         .from('companies')
