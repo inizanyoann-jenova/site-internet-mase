@@ -13,8 +13,10 @@ export function ParametresView() {
     const a = document.createElement('a');
     a.href = url;
     a.download = `matrice-${data.config.company.replace(/\s+/g, '-').toLowerCase()}.json`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
   }
 
   function importJSON(e: React.ChangeEvent<HTMLInputElement>) {
