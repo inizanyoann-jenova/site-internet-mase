@@ -23,24 +23,28 @@ export function useAccess(session: Session | null): AccessState & { refetch: () 
 
     setState((prev) => ({ ...prev, isLoading: true }));
 
-    const [purchaseResult, progressResult] = await Promise.all([
-      supabase
-        .from('purchases')
-        .select('id')
-        .eq('user_id', session.user.id)
-        .maybeSingle(),
-      supabase
-        .from('questionnaire_progress')
-        .select('answers')
-        .eq('user_id', session.user.id)
-        .maybeSingle(),
-    ]);
+    try {
+      const [purchaseResult, progressResult] = await Promise.all([
+        supabase
+          .from('purchases')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .maybeSingle(),
+        supabase
+          .from('questionnaire_progress')
+          .select('answers')
+          .eq('user_id', session.user.id)
+          .maybeSingle(),
+      ]);
 
-    setState({
-      hasPurchase: !!purchaseResult.data,
-      isLoading: false,
-      savedAnswers: (progressResult.data?.answers as Record<string, string>) ?? null,
-    });
+      setState({
+        hasPurchase: !!purchaseResult.data,
+        isLoading: false,
+        savedAnswers: (progressResult.data?.answers as Record<string, string>) ?? null,
+      });
+    } catch {
+      setState({ hasPurchase: false, isLoading: false, savedAnswers: null });
+    }
   }, [session]);
 
   useEffect(() => {
