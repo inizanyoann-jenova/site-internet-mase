@@ -13,6 +13,7 @@
   "dependencies": {
     "react": "^19.0.0-beta-26f2496093-20240514",
     "react-dom": "^19.0.0-beta-26f2496093-20240514",
+    "docx": "^8.5.0",
     "@react-pdf/renderer": "^4.5.0",
     "@supabase/supabase-js": "^2.106.2",
     "lucide-react": "^0.428.0"
