@@ -69,6 +69,13 @@ export default function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Quand la session arrive après le retour Stripe (race condition : session nulle au moment du polling)
+  useEffect(() => {
+    if (paymentPending && session) {
+      refetch();
+    }
+  }, [paymentPending, session, refetch]);
+
   // Quand l'achat est confirmé après le retour Stripe
   useEffect(() => {
     if (paymentPending && hasPurchase) {
