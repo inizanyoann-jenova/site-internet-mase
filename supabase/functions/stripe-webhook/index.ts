@@ -52,6 +52,21 @@ Deno.serve(async (req) => {
         ? session.customer
         : session.customer?.id ?? null;
 
+      // Idempotency: skip if company already exists for this user+tool
+      const { data: existing } = await supabase
+        .from('companies')
+        .select('id')
+        .eq('admin_user_id', userId)
+        .eq('tool_slug', toolSlug)
+        .maybeSingle();
+
+      if (existing) {
+        console.log('Company already exists, skipping creation:', existing.id);
+        return new Response(JSON.stringify({ received: true }), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
       const { data: company, error: companyErr } = await supabase
         .from('companies')
         .insert({
@@ -85,6 +100,8 @@ Deno.serve(async (req) => {
 
       if (memberErr) {
         console.error('Erreur création membre admin:', memberErr.message);
+        // Cleanup orphan company to allow webhook retry
+        await supabase.from('companies').delete().eq('id', company.id);
         return new Response('Erreur base de données', { status: 500 });
       }
     } else {
@@ -114,10 +131,14 @@ Deno.serve(async (req) => {
       ? subscription.customer
       : subscription.customer.id;
 
-    await supabase
+    const { error: updateErr } = await supabase
       .from('companies')
       .update({ subscription_status: 'canceled' })
       .eq('stripe_customer_id', customerId);
+
+    if (updateErr) {
+      console.error('Erreur mise à jour statut company:', updateErr.message);
+    }
   }
 
   if (event.type === 'customer.subscription.updated') {
@@ -126,12 +147,26 @@ Deno.serve(async (req) => {
       ? subscription.customer
       : subscription.customer.id;
 
-    const status = subscription.status === 'active' ? 'active' : subscription.status;
+    const STATUS_MAP: Record<string, string> = {
+      active: 'active',
+      past_due: 'past_due',
+      canceled: 'canceled',
+      unpaid: 'canceled',
+      incomplete_expired: 'canceled',
+      trialing: 'active',
+      incomplete: 'pending',
+      paused: 'pending',
+    };
+    const status = STATUS_MAP[subscription.status] ?? 'pending';
 
-    await supabase
+    const { error: updateErr } = await supabase
       .from('companies')
       .update({ subscription_status: status })
       .eq('stripe_customer_id', customerId);
+
+    if (updateErr) {
+      console.error('Erreur mise à jour statut company:', updateErr.message);
+    }
   }
 
   return new Response(JSON.stringify({ received: true }), {

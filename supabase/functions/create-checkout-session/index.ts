@@ -41,6 +41,22 @@ Deno.serve(async (req) => {
     const success_path = body.success_path ?? '/';
     const appUrl = Deno.env.get('APP_URL')!;
 
+    // Validate unit_amount
+    if (!unit_amount || unit_amount < 100) {
+      return new Response(
+        JSON.stringify({ error: 'unit_amount invalide (minimum 100 centimes)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
+    // Validate interval for subscription mode
+    if (mode === 'subscription' && !body.interval) {
+      return new Response(
+        JSON.stringify({ error: 'interval requis pour le mode subscription' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
     const priceData: Stripe.Checkout.SessionCreateParams.LineItem.PriceData = {
       currency: 'eur',
       product_data: { name: tool_name },
