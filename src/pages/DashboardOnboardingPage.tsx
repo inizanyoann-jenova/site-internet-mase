@@ -24,16 +24,25 @@ export default function DashboardOnboardingPage({ session }: Props) {
     }
 
     const check = async () => {
-      const { data } = await supabase
+      const { data, error: queryErr } = await supabase
         .from('company_members')
         .select('company_id, company:companies(id, name)')
         .eq('user_id', session.user.id)
         .not('accepted_at', 'is', null)
         .maybeSingle();
 
+      if (queryErr) {
+        console.error('Erreur vérification accès:', queryErr.message);
+        setCheckingAccess(false);
+        return;
+      }
+
       if (data?.company_id) {
         setCompanyId(data.company_id);
-        const companyName = (data.company as any)?.name;
+        const companyRaw = data.company;
+        const companyName = Array.isArray(companyRaw)
+          ? companyRaw[0]?.name
+          : (companyRaw as { name?: string } | null)?.name;
         if (companyName && companyName !== 'Mon entreprise') {
           navigate('/dashboard');
           return;

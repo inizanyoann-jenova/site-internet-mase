@@ -22,8 +22,12 @@ export function DashboardLayout({ company, membership, children }: Props) {
       {/* Overlay mobile */}
       {sidebarOpen && (
         <div
+          role="button"
+          tabIndex={0}
+          aria-label="Fermer le menu"
           className="fixed inset-0 z-20 bg-black/50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setSidebarOpen(false)}
         />
       )}
 
@@ -46,6 +50,8 @@ export function DashboardLayout({ company, membership, children }: Props) {
         <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
+            aria-label="Ouvrir le menu"
+            aria-expanded={sidebarOpen}
             className="rounded-md p-1 text-slate-600 hover:bg-slate-100"
           >
             ☰

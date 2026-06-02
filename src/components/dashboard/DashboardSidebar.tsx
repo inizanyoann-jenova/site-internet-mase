@@ -63,7 +63,7 @@ export function DashboardSidebar({ company, membership, onClose }: Props) {
           {company.name}
         </div>
         <div className="mt-0.5 text-xs text-white/50 capitalize">
-          {membership.role.replace('_', ' ')}
+          {membership.role.replaceAll('_', ' ')}
         </div>
       </div>
 
