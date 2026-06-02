@@ -12,6 +12,7 @@ import { QUESTIONS } from './engine/questionnaire';
 import { computeIndicators } from './engine/indicators';
 import { selectBlocks } from './engine/selectBlocks';
 import { downloadPolicyDocx } from './engine/renderDocx';
+import { downloadPolicyPdf } from './engine/renderPdf';
 import { enhanceWithMistral } from './engine/enhanceWithMistral';
 import type { CompanyInfo, Indicators, SelectedBlock } from './engine/types';
 
@@ -229,6 +230,7 @@ export default function App() {
                 onBack={() => setStep('company')}
                 onRestart={handleRestart}
                 onDownload={() => downloadPolicyDocx(selectedBlocks, companyInfo)}
+                onDownloadPdf={() => downloadPolicyPdf(selectedBlocks, companyInfo)}
               />
             )}
           </div>
