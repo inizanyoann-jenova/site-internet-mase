@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+:root {
+  --mase-primary:      #166534;
+  --mase-primary-dark: #14532d;
+  --mase-primary-light:#86efac;
+
+  --mase-heading: #0f172a;
+  --mase-text:    #334155;
+  --mase-muted:   #64748b;
+
+  --mase-surface:     #ffffff;
+  --mase-card-strong: #dcfce7;
+  --mase-border:      #e2e8f0;
+}
+
+body {
+  background-color: #f5f5f3;
+  color: var(--mase-text);
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mase-card {
+  background-color: var(--mase-surface);
+  border-color: var(--mase-border);
+}
