@@ -29,6 +29,7 @@ export function useAccess(session: Session | null): AccessState & { refetch: () 
           .from('purchases')
           .select('id')
           .eq('user_id', session.user.id)
+          .limit(1)
           .maybeSingle(),
         supabase
           .from('questionnaire_progress')
