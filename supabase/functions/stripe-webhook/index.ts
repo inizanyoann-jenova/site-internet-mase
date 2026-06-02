@@ -42,10 +42,15 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
+    if (!session.amount_total) {
+      console.error('amount_total absent dans la session Stripe');
+      return new Response('amount_total manquant', { status: 400 });
+    }
+
     const { error } = await supabase.from('purchases').insert({
       user_id: userId,
       stripe_session_id: session.id,
-      amount_cents: session.amount_total ?? 2900,
+      amount_cents: session.amount_total,
     });
 
     if (error) {

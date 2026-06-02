@@ -12,7 +12,16 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { user_id, email } = await req.json() as { user_id: string; email: string };
+    let body: { user_id: string; email: string };
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'Corps de requête JSON invalide' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+    const { user_id, email } = body;
     const appUrl = Deno.env.get('APP_URL')!;
 
     const session = await stripe.checkout.sessions.create({
