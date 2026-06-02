@@ -53,7 +53,7 @@ export default function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('payment') !== 'success') return;
-    window.history.replaceState({}, '', '/');
+    window.history.replaceState({}, '', '/outil');
     setPaymentPending(true);
 
     let count = 0;
@@ -111,7 +111,8 @@ export default function App() {
   };
 
   const goToPreview = () => {
-    const ind = computeIndicators(answers);
+    const answersArray = Object.entries(answers).map(([questionId, choiceValue]) => ({ questionId, choiceValue }));
+    const ind = computeIndicators(answersArray, QUESTIONS);
     setIndicators(ind);
     setSelectedBlocks(selectBlocks(ind));
     setIsEnhanced(false);
