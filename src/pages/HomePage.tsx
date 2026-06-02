@@ -70,7 +70,7 @@ export default function HomePage() {
         <p className="mb-10 text-center text-xs font-bold uppercase tracking-widest text-[var(--mase-muted)]">
           Nos outils
         </p>
-        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
 
           {/* Politique SSE — disponible */}
           <div
@@ -101,7 +101,7 @@ export default function HomePage() {
             </p>
             <div className="mt-4">
               <span className="text-2xl font-extrabold text-[var(--mase-heading)]">
-                29 €
+                19 €
               </span>
               <span className="ml-1 text-xs text-[var(--mase-muted)]">
                 paiement unique
@@ -144,7 +144,7 @@ export default function HomePage() {
               Polyvalence & redondance des compétences · MASE
             </p>
             <div className="mt-4">
-              <span className="text-2xl font-extrabold text-[var(--mase-heading)]">29 €</span>
+              <span className="text-2xl font-extrabold text-[var(--mase-heading)]">19 €</span>
               <span className="ml-1 text-xs text-[var(--mase-muted)]">paiement unique</span>
             </div>
             <Link
@@ -153,6 +153,108 @@ export default function HomePage() {
               style={{ backgroundColor: 'var(--mase-primary)' }}
             >
               Démarrer →
+            </Link>
+          </div>
+
+          {/* SMI Dashboard — disponible */}
+          <div
+            className="flex flex-col items-center rounded-2xl p-7 text-center transition-all duration-200 hover:-translate-y-1 relative"
+            style={{
+              background: 'linear-gradient(145deg, #ede9fe, #ddd6fe)',
+              border: '2px solid #a78bfa',
+              boxShadow: '0 2px 8px rgba(109,40,217,0.12)',
+            }}
+            onMouseEnter={e =>
+              ((e.currentTarget as HTMLDivElement).style.boxShadow =
+                '0 8px 20px rgba(109,40,217,0.20)')
+            }
+            onMouseLeave={e =>
+              ((e.currentTarget as HTMLDivElement).style.boxShadow =
+                '0 2px 8px rgba(109,40,217,0.12)')
+            }
+          >
+            <span
+              className="absolute -top-2.5 right-3 rounded-full px-3 py-0.5 text-xs font-bold text-white"
+              style={{ backgroundColor: '#7c3aed' }}
+            >
+              NOUVEAU
+            </span>
+            <span className="mb-3 text-4xl">🏭</span>
+            <span className="mb-1 inline-block rounded-full bg-[#7c3aed] px-3 py-0.5 text-xs font-bold text-white">
+              ✓ Disponible
+            </span>
+            <h2 className="mt-3 text-base font-extrabold text-[var(--mase-heading)]">
+              SMI Dashboard
+            </h2>
+            <p className="mt-1 text-xs text-[var(--mase-muted)]">
+              Pilotage QHSE complet · MASE
+            </p>
+            <div className="mt-4">
+              <div>
+                <span className="text-xl font-extrabold text-[var(--mase-heading)]">15 €</span>
+                <span className="ml-1 text-xs text-[var(--mase-muted)]">/mois</span>
+              </div>
+              <div className="text-xs text-[var(--mase-muted)]">
+                ou <strong>299 €</strong> à vie
+              </div>
+            </div>
+            <Link
+              to="/dashboard/acheter"
+              className="mt-5 inline-block rounded-full px-7 py-2.5 text-sm font-bold text-white transition hover:opacity-90"
+              style={{ backgroundColor: '#7c3aed' }}
+            >
+              Découvrir →
+            </Link>
+          </div>
+
+          {/* Pack MASE Complet */}
+          <div
+            className="flex flex-col items-center rounded-2xl p-7 text-center transition-all duration-200 hover:-translate-y-1 relative"
+            style={{
+              background: 'linear-gradient(145deg, #fef9c3, #fef08a)',
+              border: '2px solid #facc15',
+              boxShadow: '0 2px 8px rgba(161,98,7,0.15)',
+            }}
+            onMouseEnter={e =>
+              ((e.currentTarget as HTMLDivElement).style.boxShadow =
+                '0 8px 20px rgba(161,98,7,0.22)')
+            }
+            onMouseLeave={e =>
+              ((e.currentTarget as HTMLDivElement).style.boxShadow =
+                '0 2px 8px rgba(161,98,7,0.15)')
+            }
+          >
+            <span
+              className="absolute -top-2.5 right-3 rounded-full px-3 py-0.5 text-xs font-bold text-white"
+              style={{ backgroundColor: '#d97706' }}
+            >
+              ⭐ BEST VALUE
+            </span>
+            <span className="mb-3 text-4xl">🎁</span>
+            <span className="mb-1 inline-block rounded-full bg-[#d97706] px-3 py-0.5 text-xs font-bold text-white">
+              ✓ Disponible
+            </span>
+            <h2 className="mt-3 text-base font-extrabold text-[var(--mase-heading)]">
+              Pack MASE Complet
+            </h2>
+            <p className="mt-1 text-xs text-[var(--mase-muted)]">
+              SSE + Matrice + SMI Dashboard
+            </p>
+            <div className="mt-4">
+              <div>
+                <span className="text-xl font-extrabold text-[var(--mase-heading)]">25 €</span>
+                <span className="ml-1 text-xs text-[var(--mase-muted)]">/mois</span>
+              </div>
+              <div className="text-xs text-[var(--mase-muted)]">
+                ou <strong>399 €</strong> à vie
+              </div>
+            </div>
+            <Link
+              to="/dashboard/acheter?pack=complet"
+              className="mt-5 inline-block rounded-full px-7 py-2.5 text-sm font-bold text-white transition hover:opacity-90"
+              style={{ backgroundColor: '#d97706' }}
+            >
+              Choisir le pack →
             </Link>
           </div>
 
@@ -186,48 +288,6 @@ export default function HomePage() {
             <button
               onClick={() =>
                 setModal({ toolName: 'Document Unique', toolSlug: 'document-unique' })
-              }
-              className="mt-6 rounded-full px-7 py-2.5 text-sm font-bold transition hover:bg-[var(--mase-primary)] hover:text-white"
-              style={{
-                background: 'white',
-                border: '1.5px solid var(--mase-primary)',
-                color: 'var(--mase-primary)',
-              }}
-            >
-              🔔 Me notifier
-            </button>
-          </div>
-
-          {/* Plan de Prévention — bientôt */}
-          <div
-            className="flex flex-col items-center rounded-2xl p-7 text-center transition-all duration-200 hover:-translate-y-1"
-            style={{
-              background: '#f8fafc',
-              border: '1.5px solid #e2e8f0',
-              opacity: 0.85,
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
-              (e.currentTarget as HTMLDivElement).style.opacity = '1';
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
-              (e.currentTarget as HTMLDivElement).style.opacity = '0.85';
-            }}
-          >
-            <span className="mb-3 text-4xl">🛡️</span>
-            <span className="mb-1 inline-block rounded-full bg-slate-100 px-3 py-0.5 text-xs font-semibold text-slate-400">
-              Bientôt
-            </span>
-            <h2 className="mt-3 text-base font-extrabold text-[var(--mase-heading)]">
-              Plan de Prévention
-            </h2>
-            <p className="mt-1 text-xs text-[var(--mase-muted)]">
-              Co-activité et sous-traitance
-            </p>
-            <button
-              onClick={() =>
-                setModal({ toolName: 'Plan de Prévention', toolSlug: 'plan-prevention' })
               }
               className="mt-6 rounded-full px-7 py-2.5 text-sm font-bold transition hover:bg-[var(--mase-primary)] hover:text-white"
               style={{
