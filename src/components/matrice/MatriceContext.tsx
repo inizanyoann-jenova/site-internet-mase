@@ -29,20 +29,26 @@ export function MatriceProvider({ session, children }: { session: Session; child
     initializedRef.current = true;
 
     (async () => {
-      const { data: row } = await supabase
+      const { data: row, error } = await supabase
         .from('matrices')
         .select('data')
         .eq('user_id', session.user.id)
         .maybeSingle();
 
+      if (error) {
+        console.error('[MatriceContext] Failed to load:', error);
+        return; // keep isFirstLoad = true → auto-save stays blocked
+      }
+
       if (row?.data) {
         dispatch({ type: 'SET_DATA', data: row.data as MatriceData });
       } else {
         // Première visite : insérer les données de démo
-        await supabase.from('matrices').insert({
+        const { error: insertError } = await supabase.from('matrices').insert({
           user_id: session.user.id,
           data: DEMO_DATA,
         });
+        if (insertError) console.error('[MatriceContext] Failed to insert demo data:', insertError);
       }
       isFirstLoad.current = false;
     })();
@@ -51,9 +57,9 @@ export function MatriceProvider({ session, children }: { session: Session; child
   // Auto-save avec debounce 1.5s
   useEffect(() => {
     if (isFirstLoad.current) return;
-    setSaveStatus('saving');
 
     const timer = setTimeout(async () => {
+      setSaveStatus('saving');
       const { error } = await supabase
         .from('matrices')
         .upsert(
