@@ -1,0 +1,46 @@
+import Stripe from 'https://esm.sh/stripe@14.21.0?target=deno';
+import { corsHeaders } from '../_shared/cors.ts';
+
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
+  apiVersion: '2024-06-20',
+  httpClient: Stripe.createFetchHttpClient(),
+});
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const { user_id, email } = await req.json() as { user_id: string; email: string };
+    const appUrl = Deno.env.get('APP_URL')!;
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [{
+        price_data: {
+          currency: 'eur',
+          product_data: { name: 'Générateur Politique SSE — MASE' },
+          unit_amount: 2900,
+        },
+        quantity: 1,
+      }],
+      mode: 'payment',
+      success_url: `${appUrl}/?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appUrl}/`,
+      customer_email: email,
+      metadata: { user_id },
+    });
+
+    return new Response(
+      JSON.stringify({ url: session.url }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Erreur inconnue';
+    return new Response(
+      JSON.stringify({ error: message }),
+      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  }
+});
