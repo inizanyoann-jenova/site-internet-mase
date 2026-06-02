@@ -27,6 +27,26 @@ Deno.serve(async (req) => {
     });
   }
 
+  const VALID_ROLES = ['admin', 'responsable_qhse', 'direction', 'lecteur', 'operateur'];
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!body.company_id || !body.email || !body.role) {
+    return new Response(JSON.stringify({ error: 'Champs manquants: company_id, email, role requis' }), {
+      status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+  if (!emailRegex.test(body.email.trim())) {
+    return new Response(JSON.stringify({ error: 'Adresse email invalide' }), {
+      status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+  if (!VALID_ROLES.includes(body.role)) {
+    return new Response(JSON.stringify({ error: `Rôle invalide. Valeurs acceptées: ${VALID_ROLES.join(', ')}` }), {
+      status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+  body.email = body.email.trim();
+
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
@@ -59,6 +79,24 @@ Deno.serve(async (req) => {
   // Générer un token d'invitation unique
   const invitationToken = crypto.randomUUID();
 
+  // Check for existing pending invitation for this email in this company
+  const { data: existingInvite } = await supabase
+    .from('company_members')
+    .select('id, invitation_token')
+    .eq('company_id', body.company_id)
+    .eq('email', body.email)
+    .is('accepted_at', null)
+    .maybeSingle();
+
+  if (existingInvite) {
+    // Return the existing invite URL instead of creating a duplicate
+    const appUrl = Deno.env.get('APP_URL')!;
+    const existingUrl = `${appUrl}/dashboard/rejoindre?token=${existingInvite.invitation_token}`;
+    return new Response(JSON.stringify({ success: true, invite_url: existingUrl }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
   const { error: insertErr } = await supabase.from('company_members').insert({
     company_id: body.company_id,
     email: body.email,
@@ -72,20 +110,8 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Envoyer l'email via Supabase Auth invite (ou SMTP si configuré)
   const appUrl = Deno.env.get('APP_URL')!;
   const inviteUrl = `${appUrl}/dashboard/rejoindre?token=${invitationToken}`;
-
-  // Utiliser le système d'email de Supabase Auth
-  const { error: emailErr } = await supabase.auth.admin.inviteUserByEmail(body.email, {
-    data: { invite_url: inviteUrl },
-    redirectTo: inviteUrl,
-  });
-
-  if (emailErr) {
-    console.error('Email invitation error:', emailErr.message);
-    // Ne pas bloquer : le token est créé, l'admin peut partager le lien manuellement
-  }
 
   return new Response(JSON.stringify({ success: true, invite_url: inviteUrl }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },

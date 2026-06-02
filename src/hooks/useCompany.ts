@@ -17,7 +17,7 @@ export interface CompanyMember {
   user_id: string;
   email: string;
   role: 'admin' | 'responsable_qhse' | 'direction' | 'lecteur' | 'operateur';
-  accepted_at: string;
+  accepted_at: string | null;
   company: Company;
 }
 
@@ -25,6 +25,7 @@ interface CompanyState {
   company: Company | null;
   membership: CompanyMember | null;
   isLoading: boolean;
+  error: Error | null;
 }
 
 export function useCompany(session: Session | null): CompanyState & { refetch: () => void } {
@@ -32,11 +33,12 @@ export function useCompany(session: Session | null): CompanyState & { refetch: (
     company: null,
     membership: null,
     isLoading: false,
+    error: null,
   });
 
   const fetch = useCallback(async () => {
     if (!session) {
-      setState({ company: null, membership: null, isLoading: false });
+      setState({ company: null, membership: null, isLoading: false, error: null });
       return;
     }
 
@@ -53,7 +55,7 @@ export function useCompany(session: Session | null): CompanyState & { refetch: (
       if (error) throw error;
 
       if (!data) {
-        setState({ company: null, membership: null, isLoading: false });
+        setState({ company: null, membership: null, isLoading: false, error: null });
         return;
       }
 
@@ -62,9 +64,10 @@ export function useCompany(session: Session | null): CompanyState & { refetch: (
         company: company as Company,
         membership: { ...membershipData, company } as CompanyMember,
         isLoading: false,
+        error: null,
       });
-    } catch {
-      setState({ company: null, membership: null, isLoading: false });
+    } catch (err) {
+      setState({ company: null, membership: null, isLoading: false, error: err instanceof Error ? err : new Error('Unknown error') });
     }
   }, [session]);
 
