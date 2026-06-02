@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    let body: { user_id: string; email: string };
+    let body: { user_id: string; email: string; tool_slug?: string; tool_name?: string; success_path?: string };
     try {
       body = await req.json();
     } catch {
@@ -25,7 +25,11 @@ Deno.serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
+
     const { user_id, email } = body;
+    const tool_slug = body.tool_slug ?? 'politique-sse';
+    const tool_name = body.tool_name ?? 'Générateur Politique SSE — MASE';
+    const success_path = body.success_path ?? '/outil';
     const appUrl = Deno.env.get('APP_URL')!;
 
     const session = await stripe.checkout.sessions.create({
@@ -33,16 +37,16 @@ Deno.serve(async (req) => {
       line_items: [{
         price_data: {
           currency: 'eur',
-          product_data: { name: 'Générateur Politique SSE — MASE' },
+          product_data: { name: tool_name },
           unit_amount: 2900,
         },
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: `${appUrl}/outil?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${appUrl}${success_path}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/`,
       customer_email: email,
-      metadata: { user_id },
+      metadata: { user_id, tool_slug },
     });
 
     return new Response(

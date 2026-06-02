@@ -1,8 +1,14 @@
 import { supabase } from './supabase';
 
-export async function redirectToCheckout(userId: string, email: string): Promise<void> {
+export async function redirectToCheckout(
+  userId: string,
+  email: string,
+  toolSlug = 'politique-sse',
+  toolName = 'Générateur Politique SSE — MASE',
+  successPath = '/outil',
+): Promise<void> {
   const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-    body: { user_id: userId, email },
+    body: { user_id: userId, email, tool_slug: toolSlug, tool_name: toolName, success_path: successPath },
   });
 
   if (error) {

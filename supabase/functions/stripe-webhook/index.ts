@@ -47,10 +47,13 @@ Deno.serve(async (req) => {
       return new Response('amount_total manquant', { status: 400 });
     }
 
+    const tool_slug = session.metadata?.tool_slug ?? 'politique-sse';
+
     const { error } = await supabase.from('purchases').insert({
       user_id: userId,
       stripe_session_id: session.id,
       amount_cents: session.amount_total,
+      tool_slug,
     });
 
     if (error) {
