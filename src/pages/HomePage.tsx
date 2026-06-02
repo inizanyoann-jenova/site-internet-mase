@@ -1,6 +1,11 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { NotifyModal } from '../components/NotifyModal';
+
+type ModalState = { toolName: string; toolSlug: string } | null;
 
 export default function HomePage() {
+  const [modal, setModal] = useState<ModalState>(null);
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f5f5f3' }}>
 
@@ -59,6 +64,153 @@ export default function HomePage() {
           Découvrir les outils ↓
         </a>
       </section>
+
+      {/* Grille d'outils */}
+      <section id="outils" className="bg-white px-6 py-14">
+        <p className="mb-10 text-center text-xs font-bold uppercase tracking-widest text-[var(--mase-muted)]">
+          Nos outils
+        </p>
+        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-3">
+
+          {/* Politique SSE — disponible */}
+          <div
+            className="flex flex-col items-center rounded-2xl p-7 text-center transition-all duration-200 hover:-translate-y-1"
+            style={{
+              background: 'linear-gradient(145deg, #dcfce7, #bbf7d0)',
+              border: '1.5px solid #86efac',
+              boxShadow: '0 2px 8px rgba(22,101,52,0.12)',
+            }}
+            onMouseEnter={e =>
+              ((e.currentTarget as HTMLDivElement).style.boxShadow =
+                '0 8px 20px rgba(22,101,52,0.18)')
+            }
+            onMouseLeave={e =>
+              ((e.currentTarget as HTMLDivElement).style.boxShadow =
+                '0 2px 8px rgba(22,101,52,0.12)')
+            }
+          >
+            <span className="mb-3 text-4xl">📋</span>
+            <span className="mb-1 inline-block rounded-full bg-[var(--mase-primary)] px-3 py-0.5 text-xs font-bold text-white">
+              ✓ Disponible
+            </span>
+            <h2 className="mt-3 text-base font-extrabold text-[var(--mase-heading)]">
+              Politique SSE
+            </h2>
+            <p className="mt-1 text-xs text-[var(--mase-muted)]">
+              Conforme Exig. 1.2 MASE V2024 · 10 min
+            </p>
+            <div className="mt-4">
+              <span className="text-2xl font-extrabold text-[var(--mase-heading)]">
+                29 €
+              </span>
+              <span className="ml-1 text-xs text-[var(--mase-muted)]">
+                paiement unique
+              </span>
+            </div>
+            <Link
+              to="/outil"
+              className="mt-5 inline-block rounded-full px-7 py-2.5 text-sm font-bold text-white transition hover:opacity-90"
+              style={{ backgroundColor: 'var(--mase-primary)' }}
+            >
+              Démarrer →
+            </Link>
+          </div>
+
+          {/* Document Unique — bientôt */}
+          <div
+            className="flex flex-col items-center rounded-2xl p-7 text-center transition-all duration-200 hover:-translate-y-1"
+            style={{
+              background: '#f8fafc',
+              border: '1.5px solid #e2e8f0',
+              opacity: 0.85,
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+              (e.currentTarget as HTMLDivElement).style.opacity = '1';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
+              (e.currentTarget as HTMLDivElement).style.opacity = '0.85';
+            }}
+          >
+            <span className="mb-3 text-4xl">📂</span>
+            <span className="mb-1 inline-block rounded-full bg-slate-100 px-3 py-0.5 text-xs font-semibold text-slate-400">
+              Bientôt
+            </span>
+            <h2 className="mt-3 text-base font-extrabold text-[var(--mase-heading)]">
+              Document Unique
+            </h2>
+            <p className="mt-1 text-xs text-[var(--mase-muted)]">
+              Évaluation des risques professionnels
+            </p>
+            <button
+              onClick={() =>
+                setModal({ toolName: 'Document Unique', toolSlug: 'document-unique' })
+              }
+              className="mt-6 rounded-full px-7 py-2.5 text-sm font-bold transition hover:bg-[var(--mase-primary)] hover:text-white"
+              style={{
+                background: 'white',
+                border: '1.5px solid var(--mase-primary)',
+                color: 'var(--mase-primary)',
+              }}
+            >
+              🔔 Me notifier
+            </button>
+          </div>
+
+          {/* Plan de Prévention — bientôt */}
+          <div
+            className="flex flex-col items-center rounded-2xl p-7 text-center transition-all duration-200 hover:-translate-y-1"
+            style={{
+              background: '#f8fafc',
+              border: '1.5px solid #e2e8f0',
+              opacity: 0.85,
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+              (e.currentTarget as HTMLDivElement).style.opacity = '1';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
+              (e.currentTarget as HTMLDivElement).style.opacity = '0.85';
+            }}
+          >
+            <span className="mb-3 text-4xl">🛡️</span>
+            <span className="mb-1 inline-block rounded-full bg-slate-100 px-3 py-0.5 text-xs font-semibold text-slate-400">
+              Bientôt
+            </span>
+            <h2 className="mt-3 text-base font-extrabold text-[var(--mase-heading)]">
+              Plan de Prévention
+            </h2>
+            <p className="mt-1 text-xs text-[var(--mase-muted)]">
+              Co-activité et sous-traitance
+            </p>
+            <button
+              onClick={() =>
+                setModal({ toolName: 'Plan de Prévention', toolSlug: 'plan-prevention' })
+              }
+              className="mt-6 rounded-full px-7 py-2.5 text-sm font-bold transition hover:bg-[var(--mase-primary)] hover:text-white"
+              style={{
+                background: 'white',
+                border: '1.5px solid var(--mase-primary)',
+                color: 'var(--mase-primary)',
+              }}
+            >
+              🔔 Me notifier
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Modal */}
+      {modal && (
+        <NotifyModal
+          toolName={modal.toolName}
+          toolSlug={modal.toolSlug}
+          onClose={() => setModal(null)}
+        />
+      )}
 
       {/* Footer provisoire */}
       <footer
