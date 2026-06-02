@@ -11,6 +11,7 @@ import { PolicyPreview } from './components/PolicyPreview';
 import { QUESTIONS } from './engine/questionnaire';
 import { computeIndicators } from './engine/indicators';
 import { selectBlocks } from './engine/selectBlocks';
+import { BLOCKS, AXIS_TEXTS } from './engine/blocks';
 import { downloadPolicyDocx } from './engine/renderDocx';
 import { downloadPolicyPdf } from './engine/renderPdf';
 import { enhanceWithMistral } from './engine/enhanceWithMistral';
@@ -114,7 +115,7 @@ export default function App() {
     const answersArray = Object.entries(answers).map(([questionId, choiceValue]) => ({ questionId, choiceValue }));
     const ind = computeIndicators(answersArray, QUESTIONS);
     setIndicators(ind);
-    setSelectedBlocks(selectBlocks(ind));
+    setSelectedBlocks(selectBlocks(ind, BLOCKS, AXIS_TEXTS));
     setIsEnhanced(false);
     setEnhanceError(null);
     setStep('preview');
