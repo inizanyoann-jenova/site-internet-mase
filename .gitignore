@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env*
+*.tsbuildinfo
+output/
+supabase/.temp/
+.superpowers/
+.vscode/
+clear_cache*.py
