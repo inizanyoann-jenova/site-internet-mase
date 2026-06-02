@@ -44,7 +44,7 @@ describe('getCoverageAlerts', () => {
     expect(alerts).toHaveLength(0);
   });
 
-  it('ne signale rien si couverture suffisante', () => {
+  it('signale warning si 1 disponible sur poste clé avec minBackups=2', () => {
     const alerts = getCoverageAlerts([comp1], employees);
     // Alice dispo niveau 3 seulement (1 dispo), Bob absent, Carla niveau 0 → warning
     expect(alerts[0].status).toBe('warning');
