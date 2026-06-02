@@ -86,11 +86,16 @@ function BlockContent({ text, company }: { text: string; company: CompanyInfo })
 }
 
 export function buildPdfDocument(blocks: SelectedBlock[], company: CompanyInfo) {
-  const grouped = blocks.reduce<Record<string, string[]>>((acc, block) => {
-    acc[block.section] = acc[block.section] ?? [];
-    acc[block.section].push(block.text);
-    return acc;
-  }, {});
+  const sections: Array<{ key: string; texts: string[] }> = [];
+  let currentSection: string | null = null;
+
+  for (const block of blocks) {
+    if (block.section !== currentSection) {
+      currentSection = block.section;
+      sections.push({ key: block.section, texts: [] });
+    }
+    sections[sections.length - 1].texts.push(block.text);
+  }
 
   return (
     <Document>
@@ -103,10 +108,10 @@ export function buildPdfDocument(blocks: SelectedBlock[], company: CompanyInfo) 
           [Emplacement réservé au logo de l'entreprise]
         </Text>
 
-        {Object.entries(grouped).map(([sectionKey, texts]) => (
-          <View key={sectionKey}>
+        {sections.map(({ key, texts }) => (
+          <View key={key}>
             <Text style={styles.sectionTitle}>
-              {SECTION_TITLES[sectionKey as Section] ?? sectionKey}
+              {SECTION_TITLES[key as Section] ?? key}
             </Text>
             {texts.map((text, i) => (
               <BlockContent key={i} text={text} company={company} />
