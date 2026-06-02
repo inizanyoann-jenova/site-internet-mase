@@ -70,7 +70,7 @@ export default function HomePage() {
         <p className="mb-10 text-center text-xs font-bold uppercase tracking-widest text-[var(--mase-muted)]">
           Nos outils
         </p>
-        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-3">
+        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
 
           {/* Politique SSE — disponible */}
           <div
@@ -109,6 +109,46 @@ export default function HomePage() {
             </div>
             <Link
               to="/outil"
+              className="mt-5 inline-block rounded-full px-7 py-2.5 text-sm font-bold text-white transition hover:opacity-90"
+              style={{ backgroundColor: 'var(--mase-primary)' }}
+            >
+              Démarrer →
+            </Link>
+          </div>
+
+          {/* Matrice de Polyvalence — disponible */}
+          <div
+            className="flex flex-col items-center rounded-2xl p-7 text-center transition-all duration-200 hover:-translate-y-1"
+            style={{
+              background: 'linear-gradient(145deg, #dbeafe, #bfdbfe)',
+              border: '1.5px solid #93c5fd',
+              boxShadow: '0 2px 8px rgba(29,78,216,0.12)',
+            }}
+            onMouseEnter={e =>
+              ((e.currentTarget as HTMLDivElement).style.boxShadow =
+                '0 8px 20px rgba(29,78,216,0.18)')
+            }
+            onMouseLeave={e =>
+              ((e.currentTarget as HTMLDivElement).style.boxShadow =
+                '0 2px 8px rgba(29,78,216,0.12)')
+            }
+          >
+            <span className="mb-3 text-4xl">📊</span>
+            <span className="mb-1 inline-block rounded-full bg-[var(--mase-primary)] px-3 py-0.5 text-xs font-bold text-white">
+              ✓ Disponible
+            </span>
+            <h2 className="mt-3 text-base font-extrabold text-[var(--mase-heading)]">
+              Matrice de Polyvalence
+            </h2>
+            <p className="mt-1 text-xs text-[var(--mase-muted)]">
+              Polyvalence & redondance des compétences · MASE
+            </p>
+            <div className="mt-4">
+              <span className="text-2xl font-extrabold text-[var(--mase-heading)]">29 €</span>
+              <span className="ml-1 text-xs text-[var(--mase-muted)]">paiement unique</span>
+            </div>
+            <Link
+              to="/matrice-polyvalence"
               className="mt-5 inline-block rounded-full px-7 py-2.5 text-sm font-bold text-white transition hover:opacity-90"
               style={{ backgroundColor: 'var(--mase-primary)' }}
             >
