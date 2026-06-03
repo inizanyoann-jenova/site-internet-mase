@@ -14,6 +14,7 @@ import DashboardJoinPage from './pages/DashboardJoinPage';
 import DashboardTeamPage from './pages/DashboardTeamPage';
 import DashboardPurchasePage from './pages/DashboardPurchasePage';
 import DashboardDuerpPage from './pages/DashboardDuerpPage';
+import DashboardActionsPage from './pages/DashboardActionsPage';
 import './index.css';
 
 function Root() {
@@ -38,6 +39,7 @@ function Root() {
           <Route path="/dashboard/equipe" element={<DashboardTeamPage session={session} />} />
           <Route path="/dashboard/acheter" element={<DashboardPurchasePage session={session} />} />
           <Route path="/dashboard/duerp" element={<DashboardDuerpPage session={session} />} />
+          <Route path="/dashboard/actions" element={<DashboardActionsPage session={session} />} />
         </Routes>
       </BrowserRouter>
     </SessionContext.Provider>
