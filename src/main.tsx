@@ -19,6 +19,7 @@ import DashboardAccidentsPage from './pages/DashboardAccidentsPage';
 import DashboardHabilitationsPage from './pages/DashboardHabilitationsPage';
 import DashboardKPIsPage from './pages/DashboardKPIsPage';
 import DashboardRevuePage from './pages/DashboardRevuePage';
+import DashboardObjectifsPage from './pages/DashboardObjectifsPage';
 import './index.css';
 
 function Root() {
@@ -47,6 +48,7 @@ function Root() {
           <Route path="/dashboard/habilitations" element={<DashboardHabilitationsPage session={session} />} />
           <Route path="/dashboard/kpis" element={<DashboardKPIsPage session={session} />} />
           <Route path="/dashboard/revue" element={<DashboardRevuePage session={session} />} />
+          <Route path="/dashboard/objectifs" element={<DashboardObjectifsPage session={session} />} />
         </Routes>
       </BrowserRouter>
     </SessionContext.Provider>
