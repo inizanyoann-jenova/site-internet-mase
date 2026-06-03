@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
     .maybeSingle();
   const companyName = companyData?.name ?? 'votre équipe';
 
-  const appUrl = Deno.env.get('APP_URL')!;
+  const appUrl = Deno.env.get('APP_URL') ?? 'https://mase-outil.fr';
 
   const { data: existingInvite } = await supabase
     .from('company_members')
@@ -120,6 +120,7 @@ Deno.serve(async (req) => {
     .eq('company_id', body.company_id)
     .eq('email', body.email)
     .is('accepted_at', null)
+    .not('invitation_token', 'is', null)
     .maybeSingle();
 
   if (existingInvite) {

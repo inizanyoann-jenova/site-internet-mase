@@ -21,6 +21,10 @@ const TOOL_URLS: Record<string, string> = {
   'matrice-polyvalence': '/matrice-polyvalence',
 };
 
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function formatAmount(cents: number): string {
   return `${(cents / 100).toFixed(2).replace('.', ',')} €`;
 }
@@ -203,7 +207,7 @@ Deno.serve(async (req) => {
 
       // Envoyer email de confirmation dashboard
       if (userEmail) {
-        const toolName = TOOL_NAMES[toolSlug] ?? toolSlug;
+        const toolName = TOOL_NAMES[toolSlug] ?? escapeHtml(toolSlug);
         const amount = session.amount_total != null
           ? formatAmount(session.amount_total)
           : 'Voir votre facture';
@@ -239,7 +243,7 @@ Deno.serve(async (req) => {
 
       // Envoyer email de confirmation outil one-shot
       if (userEmail) {
-        const toolName = TOOL_NAMES[toolSlug] ?? toolSlug;
+        const toolName = TOOL_NAMES[toolSlug] ?? escapeHtml(toolSlug);
         const amount = formatAmount(session.amount_total);
         const toolPath = TOOL_URLS[toolSlug] ?? '/';
         const toolUrl = `${appUrl}${toolPath}`;
