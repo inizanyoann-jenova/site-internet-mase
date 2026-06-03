@@ -56,12 +56,13 @@ const PLANS: Record<Plan, {
   },
 };
 
+const validPlans: Plan[] = ['smi-monthly', 'smi-lifetime', 'pack-monthly', 'pack-lifetime'];
+
 export default function DashboardPurchasePage({ session }: Props) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const isPack = searchParams.get('pack') === 'complet';
   const planParam = searchParams.get('plan') as Plan | null;
-  const validPlans: Plan[] = ['smi-monthly', 'smi-lifetime', 'pack-monthly', 'pack-lifetime'];
   const initialPlan: Plan =
     planParam && validPlans.includes(planParam)
       ? planParam

@@ -48,4 +48,10 @@ describe('DashboardPurchasePage — sélection initiale du plan', () => {
     const button = screen.getByText('SMI Dashboard — À vie').closest('button');
     expect(button?.className).toMatch(/ring-2/);
   });
+
+  it('ignore un ?plan invalide et pré-sélectionne smi-monthly par défaut', () => {
+    renderWithRoute('?plan=invalid');
+    const button = screen.getByText('SMI Dashboard — Mensuel').closest('button');
+    expect(button?.className).toMatch(/ring-2/);
+  });
 });
