@@ -56,7 +56,7 @@ const PLANS: Record<Plan, {
   },
 };
 
-const validPlans: Plan[] = ['smi-monthly', 'smi-lifetime', 'pack-monthly', 'pack-lifetime'];
+const validPlans = Object.keys(PLANS) as Plan[];
 
 export default function DashboardPurchasePage({ session }: Props) {
   const [searchParams] = useSearchParams();

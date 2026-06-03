@@ -37,7 +37,9 @@ describe('DashboardLanding', () => {
   it('CTA à vie pointe vers /dashboard/acheter?plan=smi-lifetime', () => {
     renderLanding();
     const links = screen.getAllByRole('link', { name: /299 €/ });
-    expect(links[0]).toHaveAttribute('href', '/dashboard/acheter?plan=smi-lifetime');
+    links.forEach(link =>
+      expect(link).toHaveAttribute('href', '/dashboard/acheter?plan=smi-lifetime')
+    );
   });
 
   it('lien retour accueil pointe vers /', () => {
