@@ -60,7 +60,15 @@ export default function DashboardPurchasePage({ session }: Props) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const isPack = searchParams.get('pack') === 'complet';
-  const [selectedPlan, setSelectedPlan] = useState<Plan>(isPack ? 'pack-monthly' : 'smi-monthly');
+  const planParam = searchParams.get('plan') as Plan | null;
+  const validPlans: Plan[] = ['smi-monthly', 'smi-lifetime', 'pack-monthly', 'pack-lifetime'];
+  const initialPlan: Plan =
+    planParam && validPlans.includes(planParam)
+      ? planParam
+      : isPack
+      ? 'pack-monthly'
+      : 'smi-monthly';
+  const [selectedPlan, setSelectedPlan] = useState<Plan>(initialPlan);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
