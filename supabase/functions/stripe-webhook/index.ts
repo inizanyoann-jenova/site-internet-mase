@@ -204,7 +204,9 @@ Deno.serve(async (req) => {
       // Envoyer email de confirmation dashboard
       if (userEmail) {
         const toolName = TOOL_NAMES[toolSlug] ?? toolSlug;
-        const amount = formatAmount(session.amount_total ?? 0);
+        const amount = session.amount_total != null
+          ? formatAmount(session.amount_total)
+          : 'Voir votre facture';
         const subscriptionType = session.mode === 'subscription' ? 'Abonnement mensuel' : 'Accès à vie';
         try {
           await sendEmail(
