@@ -17,11 +17,12 @@ import DashboardDuerpPage from './pages/DashboardDuerpPage';
 import DashboardActionsPage from './pages/DashboardActionsPage';
 import DashboardAccidentsPage from './pages/DashboardAccidentsPage';
 import DashboardHabilitationsPage from './pages/DashboardHabilitationsPage';
+import DashboardKPIsPage from './pages/DashboardKPIsPage';
+import DashboardRevuePage from './pages/DashboardRevuePage';
 import './index.css';
 
 function Root() {
   const [session, setSession] = useState<Session | null>(null);
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
@@ -44,6 +45,8 @@ function Root() {
           <Route path="/dashboard/actions" element={<DashboardActionsPage session={session} />} />
           <Route path="/dashboard/accidents" element={<DashboardAccidentsPage session={session} />} />
           <Route path="/dashboard/habilitations" element={<DashboardHabilitationsPage session={session} />} />
+          <Route path="/dashboard/kpis" element={<DashboardKPIsPage session={session} />} />
+          <Route path="/dashboard/revue" element={<DashboardRevuePage session={session} />} />
         </Routes>
       </BrowserRouter>
     </SessionContext.Provider>
@@ -51,7 +54,5 @@ function Root() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <Root />
-  </React.StrictMode>,
+  <React.StrictMode><Root /></React.StrictMode>
 );
