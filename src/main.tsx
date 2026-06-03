@@ -23,6 +23,7 @@ import DashboardObjectifsPage from './pages/DashboardObjectifsPage';
 import DashboardQualitePage from './pages/DashboardQualitePage';
 import DashboardRHPage from './pages/DashboardRHPage';
 import DashboardReunionsPage from './pages/DashboardReunionsPage';
+import DashboardExportPage from './pages/DashboardExportPage';
 import './index.css';
 
 function Root() {
@@ -55,6 +56,7 @@ function Root() {
           <Route path="/dashboard/audits" element={<DashboardQualitePage session={session} />} />
           <Route path="/dashboard/rh" element={<DashboardRHPage session={session} />} />
           <Route path="/dashboard/reunions" element={<DashboardReunionsPage session={session} />} />
+          <Route path="/dashboard/export" element={<DashboardExportPage session={session} />} />
         </Routes>
       </BrowserRouter>
     </SessionContext.Provider>
