@@ -49,6 +49,10 @@ export function DashboardGuard({ session, children }: Props) {
     return <Navigate to="/dashboard/onboarding" replace />;
   }
 
+  if (company.subscription_status === 'canceled') {
+    return <Navigate to="/dashboard/acheter" replace />;
+  }
+
   return (
     <DashboardLayout company={company} membership={membership}>
       {children}

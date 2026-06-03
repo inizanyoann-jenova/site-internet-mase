@@ -37,3 +37,15 @@ export function safeMean(
   if (valides.length === 0) return { value: null, hasData: false, count: 0 };
   return { value: valides.reduce((s, n) => s + n, 0) / valides.length, hasData: true, count: valides.length };
 }
+
+export function tauxAtteinteObjectif(
+  reel: number,
+  cible: number,
+  sens: 'max' | 'min'
+): number {
+  if (cible === 0) return reel === 0 ? 100 : sens === 'min' ? 0 : 100;
+  if (sens === 'min') {
+    return Math.min(100, Math.max(0, Math.round((1 - (reel - cible) / cible) * 100)));
+  }
+  return Math.min(100, Math.max(0, Math.round((reel / cible) * 100)));
+}
