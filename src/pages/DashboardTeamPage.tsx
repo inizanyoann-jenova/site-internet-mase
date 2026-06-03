@@ -82,8 +82,8 @@ function TeamContent({ session }: Props) {
       return;
     }
 
-    const result = await res.json();
-    setSuccessMsg(`Invitation envoyée à ${inviteEmail}. Lien : ${result.invite_url}`);
+    await res.json();
+    setSuccessMsg(`Invitation envoyée par email à ${inviteEmail}.`);
     setInviteEmail('');
 
     const { data } = await supabase
