@@ -1,6 +1,6 @@
-// src/pages/DashboardPage.tsx
 import type { Session } from '@supabase/supabase-js';
 import { DashboardGuard } from '../components/dashboard/DashboardGuard';
+import { DashboardLanding } from '../components/dashboard/DashboardLanding';
 import { useCompany } from '../hooks/useCompany';
 import DashboardComex from '../dashboard/DashboardComex';
 
@@ -13,6 +13,7 @@ function ComexContent({ session }: Props) {
 }
 
 export default function DashboardPage({ session }: Props) {
+  if (!session) return <DashboardLanding />;
   return (
     <DashboardGuard session={session}>
       <ComexContent session={session} />
