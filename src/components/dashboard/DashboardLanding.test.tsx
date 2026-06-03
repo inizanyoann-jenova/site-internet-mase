@@ -21,7 +21,7 @@ describe('DashboardLanding', () => {
     expect(screen.getByText(/Pilotez votre SMI/)).toBeInTheDocument();
   });
 
-  it('affiche les 12 modules', () => {
+  it('affiche les modules clés (DUERP, Habilitations, Cockpit COMEX)', () => {
     renderLanding();
     expect(screen.getByText('DUERP')).toBeInTheDocument();
     expect(screen.getByText('Habilitations')).toBeInTheDocument();
