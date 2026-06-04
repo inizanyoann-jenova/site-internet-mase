@@ -15,6 +15,8 @@ const SIDEBAR_GROUPS: { label: string; items: SidebarItem[] }[] = [
       { path: '/dashboard', label: 'Vue Direction', icon: '🏭' },
       { path: '/dashboard/kpis', label: 'KPIs Sécurité', icon: '📊' },
       { path: '/dashboard/objectifs', label: 'Objectifs QHSE', icon: '🎯' },
+      { path: '/dashboard/calendrier', label: 'Calendrier QHSE', icon: '📆' },
+      { path: '/dashboard/recherche', label: 'Recherche', icon: '🔍' },
     ],
   },
   {
@@ -24,6 +26,7 @@ const SIDEBAR_GROUPS: { label: string; items: SidebarItem[] }[] = [
       { path: '/dashboard/accidents', label: 'Accidents', icon: '🚨' },
       { path: '/dashboard/habilitations', label: 'Habilitations', icon: '🏅' },
       { path: '/dashboard/actions', label: "Plan d'actions", icon: '✅' },
+      { path: '/dashboard/risque-chantier', label: 'Risque Chantier', icon: '🏗️' },
     ],
   },
   {
@@ -32,6 +35,7 @@ const SIDEBAR_GROUPS: { label: string; items: SidebarItem[] }[] = [
       { path: '/dashboard/audits', label: 'Audits & NC', icon: '🔍' },
       { path: '/dashboard/rh', label: 'Social RH', icon: '👥' },
       { path: '/dashboard/reunions', label: 'Réunions QHSE', icon: '📅' },
+      { path: '/dashboard/fournisseurs', label: 'Fournisseurs', icon: '🤝' },
     ],
   },
   {
@@ -39,6 +43,21 @@ const SIDEBAR_GROUPS: { label: string; items: SidebarItem[] }[] = [
     items: [
       { path: '/dashboard/revue', label: 'Revue de Direction', icon: '📝' },
       { path: '/dashboard/export', label: 'Export Excel/PDF', icon: '📤' },
+      { path: '/dashboard/notifications', label: 'Notifications', icon: '🔔' },
+    ],
+  },
+  {
+    label: 'Environnement',
+    items: [
+      { path: '/dashboard/environnement', label: 'Suivi Environnemental', icon: '🌱' },
+      { path: '/dashboard/veille', label: 'Veille Réglementaire', icon: '📜' },
+    ],
+  },
+  {
+    label: 'Conformité',
+    items: [
+      { path: '/dashboard/rgpd', label: 'RGPD', icon: '🔐' },
+      { path: '/dashboard/journal-audit', label: "Journal d'audit", icon: '🗒️' },
     ],
   },
 ];
@@ -99,14 +118,24 @@ export function DashboardSidebar({ company, membership, onClose }: Props) {
       {/* Footer */}
       <div className="border-t border-white/10 px-2 py-3">
         {membership.role === 'admin' && (
-          <Link
-            to="/dashboard/equipe"
-            onClick={onClose}
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            <span>⚙️</span>
-            <span>Mon équipe</span>
-          </Link>
+          <>
+            <Link
+              to="/dashboard/equipe"
+              onClick={onClose}
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <span>⚙️</span>
+              <span>Mon équipe</span>
+            </Link>
+            <Link
+              to="/dashboard/parametres"
+              onClick={onClose}
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <span>🏢</span>
+              <span>Paramètres</span>
+            </Link>
+          </>
         )}
         <Link
           to="/"
