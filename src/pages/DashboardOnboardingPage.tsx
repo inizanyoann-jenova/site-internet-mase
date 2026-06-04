@@ -24,7 +24,7 @@ export default function DashboardOnboardingPage({ session }: Props) {
     }
 
     const check = async () => {
-      const { data, error: queryErr } = await supabase.rpc('get_my_dashboard_access', { p_user_id: session.user.id });
+      const { data, error: queryErr } = await supabase.rpc('get_my_dashboard_access');
       console.log('[DEBUG] RPC result:', JSON.stringify({ data, error: queryErr?.message, userId: session.user.id }));
 
       if (queryErr) {
