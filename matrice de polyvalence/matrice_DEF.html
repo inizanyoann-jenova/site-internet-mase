@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrice de Polyvalence — DEF Océan Indien</title>
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue-900:#0d2137;--blue-800:#1a3a5c;--blue-700:#1f4d7a;--blue-600:#2563a8;
+  --blue-400:#3b82c4;--blue-100:#dbeafe;--blue-50:#eff6ff;
+  --red:#c0392b;--red-light:#fee2e2;
+  --lv0:#8e9eab;--lv1:#e67e22;--lv2:#27ae60;--lv3:#2980b9;
+  --ok:#1e8449;--crit:#c0392b;
+  --grey-50:#f8f9fa;--grey-100:#f1f3f4;--grey-200:#dee2e6;
+  --grey-400:#adb5bd;--grey-500:#6c757d;--grey-700:#495057;--grey-800:#343a40;
+  --shadow-sm:0 1px 4px rgba(0,0,0,.10);
+  --shadow:0 2px 10px rgba(0,0,0,.12);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.18);
+  --radius:8px;
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2f7;color:var(--grey-800);font-size:14px;min-height:100vh}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   ÉCRAN DE VERROUILLAGE
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+#lock-screen{
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(145deg,#060f1a 0%,#0d2137 40%,#1a1a2e 70%,#16213e 100%);
+  display:flex;align-items:center;justify-content:center;
+  padding:1rem;
+}
+#lock-screen::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 50%,rgba(37,99,168,.15) 0%,transparent 60%),
+             radial-gradient(ellipse at 70% 50%,rgba(155,34,38,.12) 0%,transparent 60%);
+}
+.lock-card{
+  position:relative;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;
+  padding:2.5rem 2.25rem 2rem;
+  width:100%;max-width:400px;
+  text-align:center;
+  backdrop-filter:blur(12px);
+  box-shadow:0 25px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05) inset;
+}
+.lock-logo-wrap{margin-bottom:1.5rem;display:flex;justify-content:center}
+.lock-logo-wrap img{filter:drop-shadow(0 4px 16px rgba(0,0,0,.5))}
+.lock-title{color:#fff;font-size:1.3rem;font-weight:800;letter-spacing:.5px;margin-bottom:.4rem}
+.lock-subtitle{color:rgba(255,255,255,.45);font-size:.78rem;margin-bottom:2rem;letter-spacing:.3px}
+.lock-input-wrap{position:relative;margin-bottom:.9rem}
+.lock-input{
+  width:100%;padding:.85rem 3rem .85rem 1.1rem;
+  background:rgba(255,255,255,.07);
+  border:1.5px solid rgba(255,255,255,.15);
+  border-radius:10px;color:#fff;font-size:1rem;
+  outline:none;letter-spacing:.1rem;text-align:center;
+  transition:border-color .2s,background .2s;
+  caret-color:#3b82c4;
+}
+.lock-input::placeholder{color:rgba(255,255,255,.3);letter-spacing:.05rem;font-size:.85rem}
+.lock-input:focus{border-color:#3b82c4;background:rgba(59,130,196,.1)}
+.lock-input.shake{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.lock-eye{
+  position:absolute;right:.9rem;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;color:rgba(255,255,255,.35);
+  font-size:1.1rem;padding:.2rem;line-height:1;
+  transition:color .15s;
+}
+.lock-eye:hover{color:rgba(255,255,255,.7)}
+.lock-btn{
+  width:100%;padding:.85rem;
+  background:linear-gradient(135deg,var(--blue-600),var(--blue-700));
+  color:#fff;border:none;border-radius:10px;
+  font-size:1rem;font-weight:700;cursor:pointer;
+  letter-spacing:.5px;transition:all .2s;
+  box-shadow:0 4px 15px rgba(37,99,168,.4);
+}
+.lock-btn:hover{background:linear-gradient(135deg,var(--blue-700),var(--blue-900));transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,168,.5)}
+.lock-btn:active{transform:translateY(0)}
+.lock-error{
+  color:#f87171;font-size:.8rem;font-weight:600;
+  margin-top:.75rem;min-height:1.2rem;
+  animation:fadeIn .2s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.lock-footer{color:rgba(255,255,255,.2);font-size:.7rem;margin-top:2rem;letter-spacing:.5px}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   APP SHELL
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.app-shell{display:flex;flex-direction:column;min-height:100vh}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   HEADER
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.top-header{
+  background:linear-gradient(135deg,var(--blue-900) 0%,var(--blue-700) 55%,#9b2226 100%);
+  color:#fff;padding:1rem 1.75rem;
+  display:flex;align-items:center;gap:1.25rem;
+  box-shadow:0 3px 16px rgba(13,33,55,.45);
+  flex-shrink:0;
+}
+.header-logo{flex-shrink:0;display:flex;align-items:center}
+.header-logo img{filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
+.header-brand{display:flex;flex-direction:column;gap:.1rem}
+.brand-name{font-size:1.15rem;font-weight:800;letter-spacing:.4px;line-height:1.2}
+.brand-sub{font-size:.7rem;opacity:.65;text-transform:uppercase;letter-spacing:1.2px}
+.header-center{flex:1;text-align:center}
+.header-center h1{font-size:1.25rem;font-weight:700;letter-spacing:.2px}
+.header-center p{font-size:.73rem;opacity:.65;margin-top:.2rem}
+.header-right{text-align:right;font-size:.71rem;opacity:.6;white-space:nowrap}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   TAB BAR
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.tab-bar{
+  background:#fff;border-bottom:2px solid var(--grey-200);
+  display:flex;align-items:center;padding:0 1.25rem;
+  flex-shrink:0;box-shadow:var(--shadow-sm);
+  position:sticky;top:0;z-index:50;gap:.25rem;
+}
+.tab{
+  padding:.78rem 1rem;border:none;background:none;cursor:pointer;
+  font-size:.83rem;font-weight:600;color:var(--grey-500);
+  border-bottom:3px solid transparent;margin-bottom:-2px;
+  transition:color .15s,border-color .15s;white-space:nowrap;
+}
+.tab:hover{color:var(--blue-700)}
+.tab.active{color:var(--blue-800);border-bottom-color:var(--blue-600)}
+.tab-spacer{flex:1}
+.tab-actions{display:flex;gap:.5rem;align-items:center}
+.tab-action{
+  padding:.42rem .9rem;border-radius:6px;cursor:pointer;
+  font-size:.78rem;font-weight:600;transition:all .15s;
+  display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap;
+}
+.tab-action.print-btn{background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd}
+.tab-action.print-btn:hover{background:#e0f2fe}
+.tab-action.pdf-btn{background:#fdf4ff;color:#7e22ce;border:1px solid #e9d5ff}
+.tab-action.pdf-btn:hover{background:#f3e8ff}
+.tab-action.lock-btn-sm{background:#fef2f2;color:var(--crit);border:1px solid #fecaca}
+.tab-action.lock-btn-sm:hover{background:#fee2e2}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   MAIN
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.main-content{flex:1;padding:1.25rem 1.5rem;max-width:1500px;margin:0 auto;width:100%}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   CARDS
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:.9rem 1.25rem;border-bottom:1px solid var(--grey-100);display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:.95rem;color:var(--blue-800)}
+.card-body{padding:1.25rem}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   LÉGENDE & STATS
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.legend-grid{display:flex;flex-wrap:wrap;gap:.65rem;margin-bottom:.9rem}
+.lv-item{display:flex;align-items:center;gap:.65rem;background:var(--grey-50);border-radius:6px;padding:.5rem .85rem;border:1px solid var(--grey-200)}
+.lv-badge{width:34px;height:34px;border-radius:7px;color:#fff;font-size:1.15rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.lv-badge.l0{background:var(--lv0)}.lv-badge.l1{background:var(--lv1)}.lv-badge.l2{background:var(--lv2)}.lv-badge.l3{background:var(--lv3)}
+.lv-text strong{display:block;font-size:.81rem;color:var(--grey-800)}
+.lv-text small{font-size:.7rem;color:var(--grey-500)}
+.alert-legend{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:.65rem}
+.al-item{padding:.4rem .85rem;border-radius:5px;font-size:.78rem;font-weight:600;display:flex;align-items:center;gap:.35rem}
+.al-item.danger{background:var(--red-light);color:#7b1a12;border:1px solid #f1aaa5}
+.al-item.good{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+.legend-hint{font-size:.74rem;color:var(--grey-400);font-style:italic}
+
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.75rem;margin-bottom:1.25rem}
+.stat-card{background:#fff;border-radius:var(--radius);padding:.85rem 1rem;box-shadow:var(--shadow-sm);border-top:4px solid var(--blue-600);text-align:center}
+.stat-card.danger{border-top-color:var(--crit)}.stat-card.ok{border-top-color:var(--ok)}
+.stat-val{font-size:1.75rem;font-weight:800;color:var(--blue-800);line-height:1}
+.stat-card.danger .stat-val{color:var(--crit)}.stat-card.ok .stat-val{color:var(--ok)}
+.stat-lbl{font-size:.68rem;color:var(--grey-500);margin-top:.2rem}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   MATRIX TABLE
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+/* Le conteneur scroll gère horizontal ET vertical → sticky thead fonctionne */
+.matrix-scroll{
+  overflow:auto;
+  max-height:calc(100vh - 400px);
+  min-height:260px;
+}
+.matrix-table{border-collapse:collapse;font-size:13px}
+.corner-th{
+  background:var(--blue-900);color:#fff;padding:.85rem 1rem;
+  position:sticky;left:0;top:0;z-index:40;
+  border-right:3px solid var(--blue-600);border-bottom:3px solid var(--blue-600);
+  min-width:220px;vertical-align:middle;font-size:.8rem;font-weight:700;
+  box-shadow:3px 3px 6px rgba(0,0,0,.15);
+}
+/* ── Ligne 1 du thead : en-têtes de CATÉGORIE (spanning) ── */
+.cat-th{
+  color:#fff;text-align:center;vertical-align:middle;
+  position:sticky;top:0;z-index:21;
+  padding:.5rem .75rem;font-size:.76rem;font-weight:800;letter-spacing:.3px;
+  border-right:2px solid rgba(255,255,255,.25);
+  border-bottom:1px solid rgba(255,255,255,.2);
+  height:42px;white-space:nowrap;
+}
+.cat-th-none{background:var(--grey-600,#6c757d)}
+/* ── Ligne 2 du thead : en-têtes de COMPÉTENCE ── */
+.comp-th{
+  color:#fff;
+  padding:.65rem .5rem;text-align:center;vertical-align:middle;
+  position:sticky;top:42px;z-index:20;   /* top = hauteur fixe de cat-th */
+  border-right:1px solid rgba(255,255,255,.2);border-bottom:3px solid rgba(0,0,0,.2);
+  min-width:130px;width:130px;
+}
+.comp-th-txt{
+  font-size:.74rem;font-weight:600;display:block;
+  line-height:1.4;white-space:normal;word-break:break-word;text-align:center;
+}
+.poly-th{
+  background:var(--blue-900);color:#fff;
+  position:sticky;top:0;z-index:22;
+  padding:.65rem .6rem;text-align:center;vertical-align:middle;
+  border-left:3px solid var(--blue-400);border-bottom:3px solid var(--blue-400);
+  min-width:100px;
+}
+.poly-th-txt{font-size:.74rem;font-weight:700;display:block;line-height:1.4;text-align:center}
+.emp-td{
+  background:#fff;position:sticky;left:0;z-index:10;
+  padding:.6rem 1rem;border-right:3px solid var(--grey-200);
+  border-bottom:1px solid var(--grey-100);
+  min-width:210px;box-shadow:3px 0 6px rgba(0,0,0,.06);
+}
+.emp-name-cell{font-weight:700;font-size:.84rem;color:var(--blue-800)}
+.emp-role-cell{font-size:.7rem;color:var(--grey-500);font-style:italic}
+tbody tr:nth-child(even) .emp-td{background:#fafbfd}
+tbody tr:nth-child(even) .skill-cell{filter:brightness(.97)}
+.skill-cell{
+  text-align:center;vertical-align:middle;cursor:pointer;
+  user-select:none;width:130px;height:62px;
+  border-right:1px solid var(--grey-200);border-bottom:1px solid var(--grey-100);
+  transition:filter .1s,transform .1s,box-shadow .1s;
+}
+.skill-cell:hover{filter:brightness(.8)!important;transform:scale(1.09);z-index:5;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.skill-cell:active{transform:scale(.96)}
+.skill-cell[data-l="0"]{background:var(--lv0)}
+.skill-cell[data-l="1"]{background:var(--lv1)}
+.skill-cell[data-l="2"]{background:var(--lv2)}
+.skill-cell[data-l="3"]{background:var(--lv3)}
+.sk-num{color:#fff;font-size:1.35rem;font-weight:800;display:block;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,.25)}
+.sk-lbl{color:rgba(255,255,255,.82);font-size:.56rem;font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-top:.1rem}
+.poly-td{
+  text-align:center;vertical-align:middle;
+  border-left:3px solid var(--grey-200);border-bottom:1px solid var(--grey-100);
+  padding:.35rem;background:#eff6ff;
+}
+.poly-num{font-size:1.1rem;font-weight:800;color:var(--blue-700)}
+.poly-over{font-size:.65rem;color:var(--grey-500)}
+tfoot td{border-top:3px solid var(--grey-800)}
+.redund-label-td{
+  background:var(--grey-800);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;text-align:left;
+  padding:.7rem 1rem;position:sticky;left:0;z-index:10;
+  box-shadow:3px 0 6px rgba(0,0,0,.15);line-height:1.4;
+}
+.redund-val-td{text-align:center;font-weight:800;font-size:1.05rem;padding:.45rem .25rem;border-right:1px solid rgba(255,255,255,.2)}
+.redund-val-td.crit{background:var(--crit);color:#fff}
+.redund-val-td.safe{background:var(--ok);color:#fff}
+.r-sub{font-size:.6rem;font-weight:500;opacity:.85;display:block}
+.redund-corner{background:var(--blue-900);color:#fff}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   COULEURS MÉTIERS & COMPÉTENCES
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+/* Barre colorée gauche par métier */
+.emp-td-inner{display:flex;align-items:center;gap:.6rem}
+.role-bar{width:5px;border-radius:3px;flex-shrink:0;align-self:stretch;min-height:36px}
+/* Légende des métiers dans la matrice */
+.role-legend-wrap{padding:.6rem 0 .2rem}
+.role-legend-title{font-size:.78rem;font-weight:700;color:var(--grey-600,#555);margin-bottom:.5rem}
+.role-legend-grid{display:flex;flex-wrap:wrap;gap:.45rem}
+.role-legend-item{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.35rem .75rem;border-radius:6px;font-size:.78rem;font-weight:600;
+  border:1.5px solid transparent;cursor:pointer;transition:filter .15s;
+  user-select:none;
+}
+.role-legend-item:hover{filter:brightness(.9)}
+.role-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;border:1.5px solid rgba(0,0,0,.15)}
+/* Swatch couleur dans le tableau de gestion */
+.color-swatch{
+  width:22px;height:22px;border-radius:5px;display:inline-block;
+  border:1.5px solid rgba(0,0,0,.2);vertical-align:middle;cursor:pointer;
+}
+/* Input color natif caché mais stylé */
+input[type=color]{width:36px;height:30px;border:none;border-radius:6px;cursor:pointer;padding:2px;background:none}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   MANAGEMENT
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.view-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.view-toolbar h2{font-size:1rem;font-weight:700;color:var(--blue-800)}
+.mgmt-table{width:100%;border-collapse:collapse;font-size:.87rem}
+.mgmt-table th{background:var(--grey-50);border-bottom:2px solid var(--grey-200);padding:.6rem .9rem;text-align:left;font-weight:700;color:var(--grey-700);white-space:nowrap}
+.mgmt-table td{padding:.65rem .9rem;border-bottom:1px solid var(--grey-100);vertical-align:middle}
+.mgmt-table tr:last-child td{border-bottom:none}
+.mgmt-table tr:hover td{background:var(--grey-50)}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   BUTTONS
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.btn{display:inline-flex;align-items:center;gap:.35rem;padding:.48rem .95rem;border:none;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .14s;white-space:nowrap}
+.btn-primary{background:var(--blue-600);color:#fff}.btn-primary:hover{background:var(--blue-700)}
+.btn-success{background:var(--ok);color:#fff}.btn-success:hover{background:#16703d}
+.btn-danger{background:var(--crit);color:#fff}.btn-danger:hover{background:#a52820}
+.btn-secondary{background:var(--grey-100);color:var(--grey-700);border:1px solid var(--grey-200)}.btn-secondary:hover{background:var(--grey-200)}
+.btn-sm{padding:.3rem .65rem;font-size:.75rem}
+.btn-group{display:flex;gap:.4rem}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   FORMS
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.form-group{margin-bottom:1rem}
+.form-label{display:block;font-weight:600;font-size:.82rem;color:var(--grey-700);margin-bottom:.35rem}
+.form-control{width:100%;padding:.5rem .75rem;border:1.5px solid var(--grey-200);border-radius:6px;font-size:.88rem;color:var(--grey-800);outline:none;transition:border-color .15s}
+.form-control:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px rgba(59,130,196,.15)}
+.form-hint{font-size:.72rem;color:var(--grey-400);margin-top:.25rem}
+.form-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--grey-100)}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   SETTINGS
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.settings-section{margin-bottom:2rem}
+.settings-title{font-size:.88rem;font-weight:700;color:var(--blue-800);border-bottom:2px solid var(--blue-100);padding-bottom:.4rem;margin-bottom:1rem}
+.danger-zone{border:2px solid var(--crit);border-radius:var(--radius);padding:1rem 1.25rem;background:var(--red-light)}
+.danger-title{font-weight:700;color:var(--crit);font-size:.9rem;margin-bottom:.5rem}
+.danger-desc{font-size:.8rem;color:#7b1a12;margin-bottom:.9rem}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   MODAL
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex;animation:fadeIn .15s ease}
+.modal-box{background:#fff;border-radius:12px;box-shadow:var(--shadow-lg);width:100%;max-width:460px;max-height:90vh;overflow-y:auto;animation:slideUp .18s ease}
+@keyframes slideUp{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{padding:1.1rem 1.4rem;border-bottom:1px solid var(--grey-100);display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{font-size:1rem;font-weight:700;color:var(--blue-800)}
+.modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--grey-400);line-height:1;padding:.1rem .4rem;border-radius:4px}
+.modal-close:hover{background:var(--grey-100);color:var(--grey-700)}
+.modal-body{padding:1.4rem}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   BADGES & MISC
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+.badge{display:inline-flex;align-items:center;padding:.2rem .6rem;border-radius:12px;font-size:.72rem;font-weight:700}
+.badge-blue{background:var(--blue-50);color:var(--blue-700);border:1px solid var(--blue-100)}
+.badge-red{background:var(--red-light);color:var(--crit);border:1px solid #f1aaa5}
+.badge-green{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--grey-400)}
+.empty-icon{font-size:2.5rem;margin-bottom:.75rem}
+.empty-txt{font-size:.85rem}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   TOAST
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+#toast{
+  position:fixed;bottom:1.5rem;right:1.5rem;z-index:9000;
+  background:var(--blue-900);color:#fff;
+  padding:.8rem 1.25rem;border-radius:10px;
+  font-size:.82rem;font-weight:600;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);
+  transform:translateY(20px);opacity:0;
+  transition:all .3s ease;pointer-events:none;
+  max-width:320px;display:flex;align-items:center;gap:.5rem;
+}
+#toast.show{transform:translateY(0);opacity:1}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   PRINT / PDF
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+@media print{
+  #lock-screen,#toast,.tab-bar,.modal-overlay,.btn,.btn-group,
+  .header-right,.view-toolbar,.legend-hint{display:none!important}
+  body{background:#fff;font-size:11px}
+  .main-content{padding:.5rem}
+  .card{box-shadow:none;border:1px solid #ddd;margin-bottom:.75rem}
+  .top-header{
+    background:#1a3a5c!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    padding:.7rem 1.25rem;
+  }
+  .matrix-scroll{overflow:visible!important;max-height:none!important;height:auto!important}
+  .cat-th,.comp-th,.corner-th,.poly-th,.emp-td{position:static!important}
+  .skill-cell[data-l="0"]{background:var(--lv0)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .skill-cell[data-l="1"]{background:var(--lv1)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .skill-cell[data-l="2"]{background:var(--lv2)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .skill-cell[data-l="3"]{background:var(--lv3)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .redund-val-td.crit{background:var(--crit)!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .redund-val-td.safe{background:var(--ok)!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .redund-label-td{background:#343a40!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .corner-th,.poly-th{background:#0d2137!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cat-th,.comp-th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .emp-td{box-shadow:none!important}
+  .skill-cell{transform:none!important}
+  .stats-row{display:none}
+  #print-date{display:block!important}
+  @page{margin:1cm;size:A4 landscape}
+}
+#print-date{display:none;font-size:.65rem;color:rgba(255,255,255,.5);text-align:right;margin-top:.2rem}
+</style>
+
+</head>
+<body>
+
+<!-- �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+     ÉCRAN DE VERROUILLAGE
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? -->
+<div id="lock-screen">
+  <div class="lock-card">
+    <div class="lock-logo-wrap" id="lock-logo"></div>
+    <div class="lock-title">Accès Restreint</div>
+    <div class="lock-subtitle">Saisissez le code d'accès pour utiliser cet outil</div>
+    <div class="lock-input-wrap">
+      <input class="lock-input" type="password" id="code-input"
+        placeholder="Code d'accès" maxlength="20"
+        onkeydown="if(event.key==='Enter')checkCode()">
+      <button class="lock-eye" onclick="toggleEye()" id="eye-btn" title="Afficher / masquer">�?</button>
+    </div>
+    <button class="lock-btn" onclick="checkCode()">🔓 Déverrouiller</button>
+    <div class="lock-error" id="lock-error"></div>
+    <div class="lock-footer">DEF Océan Indien · Outil QHSE · Usage interne exclusif</div>
+  </div>
+</div>
+
+<!-- �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+     APP
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? -->
+<div class="app-shell" id="app-shell" style="display:none">
+
+  <header class="top-header">
+    <div class="header-logo" id="header-logo"></div>
+    <div class="header-brand">
+      <div class="brand-name" id="h-company"></div>
+      <div class="brand-sub" id="h-company-sub"></div>
+    </div>
+    <div class="header-center">
+      <h1 id="h-title"></h1>
+      <p id="h-sub"></p>
+      <div id="print-date"></div>
+    </div>
+    <div class="header-right">Modifié le :<br><strong id="last-update">—</strong></div>
+  </header>
+
+  <nav class="tab-bar">
+    <button class="tab active" onclick="showView('matrix')">📊 Matrice</button>
+    <button class="tab" onclick="showView('employees')">👥 Collaborateurs</button>
+    <button class="tab" onclick="showView('comps')">⚡ Compétences</button>
+    <button class="tab" onclick="showView('categories')">🗂 Catégories</button>
+    <button class="tab" onclick="showView('settings')">⚙�? Paramètres</button>
+    <div class="tab-spacer"></div>
+    <div class="tab-actions">
+      <button class="tab-action print-btn" onclick="doPrint()">🖨 Imprimer</button>
+      <button class="tab-action pdf-btn" onclick="doPDF()">📄 Exporter PDF</button>
+      <button class="tab-action lock-btn-sm" onclick="lockApp()" title="Verrouiller">🔒 Verrouiller</button>
+    </div>
+  </nav>
+
+  <main class="main-content" id="main-content"></main>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modal-box">
+    <div class="modal-header">
+      <h3 id="modal-title"></h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   LOGO DEF OCÉAN INDIEN (PNG base64)
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+const LOGO_B64 = 'data:image/png;base64,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';
+
+function makeLogo(size){
+  const isLock = size > 80;
+  if(isLock){
+    return `<img src="${LOGO_B64}" alt="DEF Océan Indien"
+      style="width:200px;height:auto;border-radius:10px;background:#fff;padding:8px 12px;box-shadow:0 4px 20px rgba(0,0,0,.5)">`;
+  }
+  return `<img src="${LOGO_B64}" alt="DEF Océan Indien"
+    style="height:44px;width:auto;border-radius:6px;background:#fff;padding:4px 8px">`;
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   LOCK SCREEN
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+const ACCESS_CODE = 'Def2026';
+
+function checkCode(){
+  const val = document.getElementById('code-input').value;
+  const inp = document.getElementById('code-input');
+  const err = document.getElementById('lock-error');
+  if(val === ACCESS_CODE){
+    sessionStorage.setItem('def_auth','1');
+    document.getElementById('lock-screen').style.display='none';
+    document.getElementById('app-shell').style.display='flex';
+    err.textContent='';
+  } else {
+    inp.classList.remove('shake');
+    void inp.offsetWidth; // reflow pour relancer l'animation
+    inp.classList.add('shake');
+    err.textContent='�?� Code incorrect. Veuillez réessayer.';
+    inp.value='';
+    inp.focus();
+    setTimeout(()=>inp.classList.remove('shake'),450);
+  }
+}
+
+function toggleEye(){
+  const inp=document.getElementById('code-input');
+  const btn=document.getElementById('eye-btn');
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='�?';}
+}
+
+function lockApp(){
+  sessionStorage.removeItem('def_auth');
+  document.getElementById('app-shell').style.display='none';
+  document.getElementById('lock-screen').style.display='flex';
+  document.getElementById('code-input').value='';
+  document.getElementById('lock-error').textContent='';
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   DONNÉES PAR DÉFAUT
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+const DEFAULTS = {
+  config:{
+    company:'DEF Océan Indien',
+    companySub:'Sécurité Incendie · SSI',
+    docTitle:'Matrice de Polyvalence et de Redondance',
+    docSub:'Pilotage des compétences critiques — Service Technique SSI',
+    roleColors:{},
+    categories:[
+      {id:'cat1',name:'Habilitations et Sécurité',                        color:'#c0392b'},
+      {id:'cat2',name:'Compétences Techniques',                            color:'#1f4d7a'},
+      {id:'cat3',name:'Ingénierie, Bureau d\'Études et Projets',           color:'#16a34a'},
+      {id:'cat4',name:'Compétences Support, Management et Relationnel',    color:'#7c3aed'},
+      {id:'cat5',name:'Ressources Humaines',                               color:'#0891b2'},
+      {id:'cat6',name:'Direction & Développement',                         color:'#ea580c'},
+    ]
+  },
+  comps:[
+    {id:'c1',name:'Installation Réseau SSI',                    categoryId:'cat2'},
+    {id:'c2',name:'Maintenance Préventive (Détecteurs/Centrales)',categoryId:'cat2'},
+    {id:'c3',name:'Programmation Centrales SSI',                 categoryId:'cat2'},
+    {id:'c4',name:'Dépannage & Astreinte',                       categoryId:'cat2'},
+    {id:'c5',name:'Audit Réglementaire APSAD',                   categoryId:'cat1'},
+    {id:'c6',name:'Habilitation Électrique (BR/B2V)',             categoryId:'cat1'},
+    {id:'c7',name:'CACES Nacelle',                               categoryId:'cat1'},
+    {id:'c8', name:'Maîtrise des Risques Chantier',              categoryId:'cat4'},
+    {id:'c9', name:'Administration du personnel',                categoryId:'cat5'},
+    {id:'c10',name:'Recrutement & intégration',                  categoryId:'cat5'},
+    {id:'c11',name:'Plan de formation',                          categoryId:'cat5'},
+    {id:'c12',name:'Gestion plannings & congés',                 categoryId:'cat5'},
+    {id:'c13',name:'Pilotage commercial & devis',                categoryId:'cat6'},
+    {id:'c14',name:'Gestion budgétaire',                         categoryId:'cat6'},
+    {id:'c15',name:"Management d'équipe",                       categoryId:'cat6'},
+    {id:'c16',name:'Reporting & indicateurs QHSE',               categoryId:'cat6'},
+  ],
+  emps:[
+    {id:'e1',name:'Jean-Philippe MARTIN',role:'Technicien SSI'},
+    {id:'e2',name:'Marco DIJOUX',role:'Technicien de Maintenance'},
+    {id:'e3',name:'Stéphane PAYET',role:'Metteur en route'},
+    {id:'e4',name:'Isabelle GRONDIN',role:'Chargée d\'Affaires'},
+    {id:'e5',name:'Rémy NATIVEL',role:'Chef de Chantier'},
+    {id:'e6',name:'Fabrice ETHÈVE',role:'Technicien SSI'},
+    {id:'e7',name:'Nathalie CADET',role:'Technicienne de Maintenance'},
+  ],
+  skills:{
+    e1:{c1:3,c2:2,c3:2,c4:3,c5:0,c6:2,c7:1,c8:2},
+    e2:{c1:2,c2:3,c3:1,c4:2,c5:0,c6:2,c7:0,c8:2},
+    e3:{c1:3,c2:2,c3:3,c4:3,c5:1,c6:3,c7:1,c8:2},
+    e4:{c1:1,c2:0,c3:1,c4:0,c5:3,c6:0,c7:0,c8:2},
+    e5:{c1:2,c2:1,c3:0,c4:1,c5:2,c6:2,c7:3,c8:3},
+    e6:{c1:2,c2:2,c3:1,c4:2,c5:0,c6:2,c7:1,c8:2},
+    e7:{c1:1,c2:3,c3:0,c4:2,c5:1,c6:1,c7:0,c8:1},
+  }
+};
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   STATE & PERSISTANCE
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+let config, comps, emps, skills;
+const KEY = 'def_polyvalence_v4';
+
+function load(){
+  try{
+    const s=localStorage.getItem(KEY);
+    if(s){
+      const d=JSON.parse(s);
+      config=d.config; comps=d.comps; emps=d.emps; skills=d.skills;
+      // Migration : ajouter les catégories si absentes
+      if(!config.categories) config.categories=JSON.parse(JSON.stringify(DEFAULTS.config.categories));
+      if(!config.roleColors)  config.roleColors={};
+      DEFAULTS.config.categories.forEach(dc=>{
+        if(!config.categories.find(c=>c.id===dc.id)) config.categories.push(JSON.parse(JSON.stringify(dc)));
+      });
+      DEFAULTS.comps.forEach(dc=>{
+        if(!comps.find(c=>c.id===dc.id)){comps.push(JSON.parse(JSON.stringify(dc)));emps.forEach(e=>{if(!skills[e.id])skills[e.id]={};skills[e.id][dc.id]=0;});}
+      });
+      // Migration : comps avec color mais sans categoryId → catégorie par défaut
+      comps.forEach(c=>{ if(!c.categoryId && c.color) delete c.color; });
+      return;
+    }
+  }catch(e){}
+  resetToDefaults(false);
+}
+
+function save(){
+  localStorage.setItem(KEY,JSON.stringify({config,comps,emps,skills}));
+  const now=new Date().toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'});
+  localStorage.setItem(KEY+'_ts',now);
+  const el=document.getElementById('last-update');
+  if(el) el.textContent=now;
+  saveToFolder();
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   SAUVEGARDE DOSSIER (File System Access API)
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+const IDB_NAME='def_poly_fs', IDB_STORE='handles', IDB_KEY='backupDir';
+
+function openIDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open(IDB_NAME,1);
+    req.onupgradeneeded=e=>e.target.result.createObjectStore(IDB_STORE);
+    req.onsuccess=e=>res(e.target.result);
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+
+async function getStoredHandle(){
+  try{
+    const db=await openIDB();
+    return new Promise((res,rej)=>{
+      const tx=db.transaction(IDB_STORE,'readonly');
+      const req=tx.objectStore(IDB_STORE).get(IDB_KEY);
+      req.onsuccess=e=>res(e.target.result||null);
+      req.onerror=e=>rej(e.target.error);
+    });
+  }catch(e){return null;}
+}
+
+async function storeHandle(handle){
+  try{
+    const db=await openIDB();
+    return new Promise((res,rej)=>{
+      const tx=db.transaction(IDB_STORE,'readwrite');
+      tx.objectStore(IDB_STORE).put(handle,IDB_KEY);
+      tx.oncomplete=()=>res();
+      tx.onerror=e=>rej(e.target.error);
+    });
+  }catch(e){}
+}
+
+async function saveToFolder(){
+  try{
+    const handle=await getStoredHandle();
+    if(!handle) return;
+    const perm=await handle.queryPermission({mode:'readwrite'});
+    if(perm!=='granted'){
+      const req=await handle.requestPermission({mode:'readwrite'});
+      if(req!=='granted') return;
+    }
+    const fname=`polyvalence_${(config?.company||'backup').replace(/\s+/g,'_')}.json`;
+    const fh=await handle.getFileHandle(fname,{create:true});
+    const w=await fh.createWritable();
+    await w.write(JSON.stringify({config,comps,emps,skills},null,2));
+    await w.close();
+    updateFolderStatus(handle.name,'✅ Sauvegardé dans : ');
+  }catch(e){
+    if(e.name!=='NotAllowedError') console.warn('saveToFolder:',e);
+  }
+}
+
+async function chooseBackupFolder(){
+  if(!('showDirectoryPicker' in window)){
+    alert('Votre navigateur ne supporte pas cette fonctionnalité.\nUtilisez Chrome ou Edge.');
+    return;
+  }
+  try{
+    const handle=await window.showDirectoryPicker({mode:'readwrite',id:'def_poly_backup'});
+    await storeHandle(handle);
+    updateFolderStatus(handle.name,'✅ Dossier sélectionné : ');
+    await saveToFolder();
+    showToast('✅ Dossier de sauvegarde configuré : '+handle.name);
+  }catch(e){
+    if(e.name!=='AbortError') showToast('�?� Erreur : '+e.message);
+  }
+}
+
+async function clearBackupFolder(){
+  if(!confirm('Supprimer la configuration du dossier de sauvegarde ?')) return;
+  try{
+    const db=await openIDB();
+    const tx=db.transaction(IDB_STORE,'readwrite');
+    tx.objectStore(IDB_STORE).delete(IDB_KEY);
+    tx.oncomplete=()=>{
+      updateFolderStatus('','');
+      showToast('Dossier de sauvegarde désactivé.');
+    };
+  }catch(e){}
+}
+
+function updateFolderStatus(name,prefix){
+  const el=document.getElementById('backup-folder-status');
+  if(!el) return;
+  if(name){
+    el.innerHTML=`<span style="color:#16a34a;font-weight:600">${prefix}<code>${name}</code></span>
+      <button class="btn btn-sm btn-secondary" style="margin-left:.5rem" onclick="chooseBackupFolder()">Changer</button>
+      <button class="btn btn-sm btn-danger" style="margin-left:.25rem" onclick="clearBackupFolder()">Retirer</button>`;
+  }else{
+    el.innerHTML=`<span style="color:var(--grey-500)">Aucun dossier configuré</span>`;
+  }
+}
+
+async function initFolderStatus(){
+  const handle=await getStoredHandle();
+  if(handle) updateFolderStatus(handle.name,'Dossier actif : ');
+}
+
+function resetToDefaults(ask){
+  if(ask&&!confirm('Réinitialiser toutes les données avec les données de démonstration ?\nToutes vos modifications seront perdues.'))return;
+  const d=JSON.parse(JSON.stringify(DEFAULTS));
+  config=d.config;comps=d.comps;emps=d.emps;skills=d.skills;
+  save();applyConfig();showView(currentView);
+}
+
+function uid(){return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   COULEURS MÉTIERS
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+const ROLE_PALETTE=[
+  '#2563a8','#c0392b','#16a34a','#7c3aed','#0891b2',
+  '#d97706','#db2777','#0f766e','#9333ea','#b45309',
+  '#1d4ed8','#65a30d','#be185d','#0369a1','#15803d'
+];
+
+function getRoleColor(role){
+  if(!config.roleColors) config.roleColors={};
+  if(!config.roleColors[role]){
+    const used=Object.values(config.roleColors);
+    const free=ROLE_PALETTE.filter(c=>!used.includes(c));
+    config.roleColors[role]=free.length?free[0]:ROLE_PALETTE[Object.keys(config.roleColors).length%ROLE_PALETTE.length];
+    save();
+  }
+  return config.roleColors[role];
+}
+
+function hexToRgb(hex){
+  const r=parseInt(hex.slice(1,3),16);
+  const g=parseInt(hex.slice(3,5),16);
+  const b=parseInt(hex.slice(5,7),16);
+  return`${r},${g},${b}`;
+}
+
+function setRoleColor(role,color){
+  if(!config.roleColors) config.roleColors={};
+  config.roleColors[role]=color;
+  save(); renderMatrix();
+}
+
+function setCompColor(cId,color){
+  const c=comps.find(x=>x.id===cId);
+  if(c){ c.color=color; save(); renderMatrix(); }
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   CATÉGORIES DE COMPÉTENCES
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+function getCategory(catId){
+  return (config.categories||[]).find(c=>c.id===catId)||null;
+}
+function getCatColor(catId){
+  const c=getCategory(catId);
+  return c?c.color:'#6c757d';
+}
+function catSelectOptions(selectedId){
+  return (config.categories||[]).map(c=>
+    `<option value="${c.id}" ${c.id===selectedId?'selected':''}>${esc(c.name)}</option>`
+  ).join('');
+}
+
+/* ── Grouper les compétences par catégorie pour l'affichage ── */
+function getCompsByCat(){
+  const cats=config.categories||[];
+  const groups=[];
+  // D'abord les catégories connues, dans l'ordre défini
+  cats.forEach(cat=>{
+    const cc=comps.filter(c=>c.categoryId===cat.id);
+    if(cc.length) groups.push({cat,comps:cc});
+  });
+  // Compétences sans catégorie
+  const orphans=comps.filter(c=>!c.categoryId||!getCategory(c.categoryId));
+  if(orphans.length) groups.push({cat:{id:'none',name:'Sans catégorie',color:'#6c757d'},comps:orphans});
+  return groups;
+}
+
+/* ── Vue : Gestion des catégories ── */
+function renderCategories(){
+  const cats=config.categories||[];
+  const rows=cats.map((cat,i)=>{
+    const nb=comps.filter(c=>c.categoryId===cat.id).length;
+    return`<tr>
+      <td style="width:32px;color:var(--grey-400);font-size:.75rem;text-align:center">${i+1}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:.7rem">
+          <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:${cat.color};flex-shrink:0"></span>
+          <strong>${esc(cat.name)}</strong>
+        </div>
+      </td>
+      <td>
+        <input type="color" value="${cat.color}" title="Changer la couleur"
+          style="width:36px;height:28px;border:1px solid var(--grey-200);border-radius:5px;cursor:pointer;padding:2px"
+          oninput="setCatColor('${cat.id}',this.value)">
+      </td>
+      <td><span class="badge badge-blue">${nb} compétence(s)</span></td>
+      <td><div class="btn-group">
+        <button class="btn btn-secondary btn-sm" onclick="openEditCategory('${cat.id}')">�?�? Renommer</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDeleteCategory('${cat.id}')" ${nb>0?'title="Des compétences utilisent cette catégorie"':''}>🗑</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('main-content').innerHTML=`
+    <div class="view-toolbar">
+      <h2>🗂 Catégories de Compétences</h2>
+      <button class="btn btn-primary" onclick="openAddCategory()">+ Ajouter une catégorie</button>
+    </div>
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-header" style="font-size:.85rem">
+        Ces catégories regroupent vos compétences dans la matrice et leur donnent une couleur d'en-tête.
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="mgmt-table">
+          <thead><tr><th>#</th><th>Nom de la catégorie</th><th>Couleur</th><th>Compétences associées</th><th>Actions</th></tr></thead>
+          <tbody>${rows||'<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--grey-400)">Aucune catégorie.</td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>
+    <div style="font-size:.75rem;color:var(--grey-400)">
+      💡 Modifiez la couleur directement avec le sélecteur. Pour affecter une compétence à une catégorie, allez dans l'onglet <strong>⚡ Compétences</strong>.
+    </div>`;
+}
+
+function setCatColor(catId,color){
+  const cat=getCategory(catId); if(!cat)return;
+  cat.color=color; save(); renderCategories();
+}
+
+function openAddCategory(){
+  openModal('Ajouter une catégorie',`
+    <div class="form-group"><label class="form-label">Nom de la catégorie *</label>
+      <input class="form-control" id="f-catname" placeholder="ex : Habilitations et Sécurité" autocomplete="off"></div>
+    <div class="form-group"><label class="form-label">Couleur</label>
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <input type="color" id="f-catcolor" value="#2563a8"
+          style="width:48px;height:36px;border:1.5px solid var(--grey-200);border-radius:7px;cursor:pointer;padding:2px">
+        <span style="font-size:.78rem;color:var(--grey-500)">Couleur affichée dans les en-têtes de colonnes de la matrice.</span>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="addCategory()">✅ Ajouter</button></div>`);
+}
+
+function addCategory(){
+  const name=document.getElementById('f-catname').value.trim();
+  const color=document.getElementById('f-catcolor').value||'#2563a8';
+  if(!name){alert('Le nom est obligatoire.');return;}
+  if(!config.categories) config.categories=[];
+  config.categories.push({id:uid(),name,color});
+  save(); closeModal(); renderCategories(); showToast('✅ Catégorie ajoutée.');
+}
+
+function openEditCategory(catId){
+  const cat=getCategory(catId); if(!cat)return;
+  openModal('Renommer la catégorie',`
+    <div class="form-group"><label class="form-label">Nom *</label>
+      <input class="form-control" id="f-catname" value="${esc(cat.name)}" autocomplete="off"></div>
+    <div class="form-group"><label class="form-label">Couleur</label>
+      <input type="color" id="f-catcolor" value="${cat.color}"
+        style="width:48px;height:36px;border:1.5px solid var(--grey-200);border-radius:7px;cursor:pointer;padding:2px">
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveCategory('${catId}')">💾 Enregistrer</button></div>`);
+}
+
+function saveCategory(catId){
+  const cat=getCategory(catId); if(!cat)return;
+  const name=document.getElementById('f-catname').value.trim();
+  const color=document.getElementById('f-catcolor').value||cat.color;
+  if(!name){alert('Le nom est obligatoire.');return;}
+  cat.name=name; cat.color=color;
+  save(); closeModal(); renderCategories(); showToast('✅ Catégorie modifiée.');
+}
+
+function confirmDeleteCategory(catId){
+  const cat=getCategory(catId); if(!cat)return;
+  const nb=comps.filter(c=>c.categoryId===catId).length;
+  openModal('Confirmer la suppression',`
+    <p style="margin-bottom:${nb>0?'.75rem':'1rem'}">Supprimer la catégorie <strong>${esc(cat.name)}</strong> ?</p>
+    ${nb>0?`<p style="color:var(--crit);font-size:.83rem;margin-bottom:1rem">⚠ ${nb} compétence(s) utilisent cette catégorie. Elles seront classées "Sans catégorie".</p>`:''}
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-danger" onclick="deleteCategory('${catId}')">🗑 Supprimer</button></div>`);
+}
+
+function deleteCategory(catId){
+  config.categories=(config.categories||[]).filter(c=>c.id!==catId);
+  comps.forEach(c=>{ if(c.categoryId===catId) c.categoryId=null; });
+  save(); closeModal(); renderCategories(); showToast('🗑 Catégorie supprimée.');
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   CALCULS
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+const LVL_LABEL=['Non formé','Formation','Autonome','Expert'];
+
+function skillOf(eId,cId){return((skills[eId]||{})[cId])||0;}
+function getPolyvalence(eId){return comps.filter(c=>skillOf(eId,c.id)>=2).length;}
+function getRedundancy(cId){return emps.filter(e=>skillOf(e.id,cId)>=2).length;}
+
+function getStats(){
+  const total=emps.length*comps.length;
+  const cov=emps.reduce((s,e)=>s+comps.filter(c=>skillOf(e.id,c.id)>=2).length,0);
+  const crits=comps.filter(c=>getRedundancy(c.id)<=1).length;
+  const safe=comps.filter(c=>getRedundancy(c.id)>=2).length;
+  const avgPoly=emps.length?(emps.reduce((s,e)=>s+getPolyvalence(e.id),0)/emps.length).toFixed(1):'0';
+  return{total,cov,crits,safe,avgPoly,pct:total?Math.round(cov/total*100):0};
+}
+
+function cycleSkill(eId,cId){
+  if(!skills[eId])skills[eId]={};
+  skills[eId][cId]=((skills[eId][cId]||0)+1)%4;
+  save();
+
+  const lvl=skills[eId][cId];
+
+  // ── Cellule cliquée ──
+  const cell=document.getElementById('sc-'+eId+'-'+cId);
+  if(cell){
+    cell.setAttribute('data-l',lvl);
+    cell.querySelector('.sk-num').textContent=lvl;
+    cell.querySelector('.sk-lbl').textContent=LVL_LABEL[lvl];
+    const emp=emps.find(e=>e.id===eId)||{};
+    const comp=comps.find(c=>c.id===cId)||{};
+    cell.title=(emp.name||'')+'\n'+(comp.name||'')+'\nNiveau : '+lvl+' — '+LVL_LABEL[lvl];
+  }
+
+  // ── Polyvalence de la ligne ──
+  const polyCell=document.getElementById('poly-'+eId);
+  if(polyCell){
+    const poly=getPolyvalence(eId);
+    const pct=comps.length?Math.round(poly/comps.length*100):0;
+    const pc=poly>=comps.length*.7?'var(--ok)':poly>=comps.length*.4?'#b7770d':'var(--crit)';
+    polyCell.innerHTML=`<div class="poly-num" style="color:${pc}">${poly}</div><div class="poly-over">/ ${comps.length} (${pct}%)</div>`;
+  }
+
+  // ── Redondance de la colonne ──
+  const redundCell=document.getElementById('redund-'+cId);
+  if(redundCell){
+    const r=getRedundancy(cId);
+    redundCell.className='redund-val-td '+(r<=1?'crit':'safe');
+    redundCell.title=(comps.find(c=>c.id===cId)||{}).name+' — Redondance : '+r;
+    redundCell.innerHTML=(r<=1?'⚠ '+r:r)+'<span class="r-sub">'+(r<=1?'CRITIQUE':'Sécurisé')+'</span>';
+  }
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   PRINT / PDF — fenêtre dédiée avec tableau complet mis à l'échelle
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+function buildPrintWindow(mode){
+  // Récupérer le tableau complet
+  const table = document.querySelector('.matrix-table');
+  if(!table){ showToast('⚠ Ouvrez la Matrice avant d\'exporter.'); return; }
+
+  const dateStr = new Date().toLocaleString('fr-FR',{dateStyle:'long',timeStyle:'short'});
+  const company = document.getElementById('h-company').textContent||'DEF Océan Indien';
+  const sub     = document.getElementById('h-company-sub').textContent||'';
+  const tableHTML = table.outerHTML;
+
+  const win = window.open('','_blank','width=1200,height=800');
+  win.document.write(`<!DOCTYPE html><html lang="fr"><head>
+<meta charset="UTF-8">
+<title>Matrice — ${company}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#fff;padding:1cm}
+h1{font-size:14pt;font-weight:800;color:#1a3a5c;margin-bottom:2px}
+p.sub{font-size:9pt;color:#555;margin-bottom:4px}
+p.date{font-size:8pt;color:#888;margin-bottom:12px}
+.wrap{width:100%;overflow:visible}
+table{border-collapse:collapse;font-size:8pt;width:100%}
+th,td{border:1px solid #ccc;padding:4px 5px;text-align:center;vertical-align:middle}
+/* En-têtes catégorie */
+.cat-th{color:#fff;font-weight:700;font-size:7.5pt;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+/* En-têtes compétence */
+.comp-th{color:#fff;font-size:7pt;font-weight:600;min-width:0!important;width:auto!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.comp-th-txt{font-size:7pt;display:block;word-break:break-word;white-space:normal}
+/* Coin + polyvalence */
+.corner-th{background:#0d2137!important;color:#fff;font-size:8pt;font-weight:700;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.poly-th{background:#0d2137!important;color:#fff;font-size:7.5pt;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.poly-th-txt{font-size:7pt;display:block}
+/* Cellules collaborateurs */
+.emp-td{text-align:left;font-weight:600;white-space:nowrap}
+.emp-name-cell{font-size:8pt;font-weight:700}
+.emp-role-cell{font-size:7pt}
+.role-bar{display:none}
+.emp-td-inner{display:flex;align-items:center;gap:4px}
+/* Cellules niveau */
+.skill-cell[data-l="0"]{background:#8e9eab!important;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.skill-cell[data-l="1"]{background:#e67e22!important;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.skill-cell[data-l="2"]{background:#27ae60!important;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.skill-cell[data-l="3"]{background:#2980b9!important;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sk-num{font-weight:700;font-size:9pt}
+.sk-lbl{display:none}
+/* Redondance */
+.redund-label-td{background:#343a40!important;color:#fff;font-size:7pt;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.redund-val-td.crit{background:#c0392b!important;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.redund-val-td.safe{background:#1e8449!important;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.r-sub{display:block;font-size:6pt}
+.poly-td{text-align:center}
+.poly-num{font-weight:700;font-size:9pt}
+.poly-over{font-size:7pt;color:#555}
+.redund-corner{background:#555!important;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@media print{
+  body{padding:0.5cm}
+  @page{size:auto;margin:0.5cm}
+}
+</style>
+</head><body>
+<h1>${company}</h1>
+${sub?`<p class="sub">${sub}</p>`:''}
+<p class="date">Document généré le ${dateStr}</p>
+<div class="wrap">${tableHTML}</div>
+<script>
+window.onload=function(){
+  var tbl=document.querySelector('table');
+  var wrap=document.querySelector('.wrap');
+  if(tbl){
+    var tw=tbl.scrollWidth;
+    var pw=wrap.clientWidth||900;
+    if(tw>pw){
+      var scale=pw/tw;
+      tbl.style.transformOrigin='top left';
+      tbl.style.transform='scale('+scale+')';
+      tbl.style.width=(100/scale)+'%';
+    }
+  }
+  ${mode==='pdf'?'setTimeout(function(){window.print();},300);':''}
+};
+<\/script>
+</body></html>`);
+  win.document.close();
+}
+
+function doPrint(){ buildPrintWindow('print'); }
+function doPDF(){ buildPrintWindow('pdf'); }
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   TOAST
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+let toastTimer;
+function showToast(msg, dur){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'), dur||2500);
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   NAVIGATION
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+let currentView='matrix';
+
+function showView(v){
+  currentView=v;
+  document.querySelectorAll('.tab-bar .tab').forEach((t,i)=>{
+    t.classList.toggle('active',['matrix','employees','comps','categories','settings'][i]===v);
+  });
+  ({matrix:renderMatrix,employees:renderEmployees,comps:renderComps,categories:renderCategories,settings:renderSettings}[v]||renderMatrix)();
+}
+
+function applyConfig(){
+  const g=id=>document.getElementById(id);
+  g('h-company').textContent=config.company||'';
+  g('h-company-sub').textContent=config.companySub||'';
+  g('h-title').textContent=config.docTitle||'';
+  g('h-sub').textContent=config.docSub||'';
+  document.title=(config.docTitle||'Matrice')+' — '+(config.company||'');
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   RENDER : MATRIX
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+function renderMatrix(){
+  const s=getStats();
+  let html=`
+  <div class="card">
+    <div class="card-header">📋 Légende — Échelle ILUO &amp; Indicateurs QHSE</div>
+    <div class="card-body">
+      <div class="legend-grid">
+        <div class="lv-item"><span class="lv-badge l0">0</span><div class="lv-text"><strong>Non formé</strong><small>Aucune compétence sur ce poste</small></div></div>
+        <div class="lv-item"><span class="lv-badge l1">1</span><div class="lv-text"><strong>En formation / Sous supervision</strong><small>Nécessite un tuteur</small></div></div>
+        <div class="lv-item"><span class="lv-badge l2">2</span><div class="lv-text"><strong>Autonome</strong><small>Tient le poste seul</small></div></div>
+        <div class="lv-item"><span class="lv-badge l3">3</span><div class="lv-text"><strong>Expert / Référent</strong><small>Peut former les pairs</small></div></div>
+      </div>
+      <div class="alert-legend">
+        <div class="al-item danger">🔴 Redondance ≤ 1 : <strong>RISQUE CRITIQUE</strong> — continuité non garantie</div>
+        <div class="al-item good">🟢 Redondance ≥ 2 : <strong>PROCESSUS SÉCURISÉ</strong> — couverture suffisante</div>
+      </div>
+      <div class="legend-hint">💡 Cliquez sur une cellule pour faire évoluer le niveau (0 → 1 → 2 → 3 → 0). Sauvegarde automatique.</div>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val">${emps.length}</div><div class="stat-lbl">Collaborateurs</div></div>
+    <div class="stat-card"><div class="stat-val">${comps.length}</div><div class="stat-lbl">Compétences critiques</div></div>
+    <div class="stat-card ${s.crits>0?'danger':'ok'}"><div class="stat-val">${s.crits}</div><div class="stat-lbl">En risque critique</div></div>
+    <div class="stat-card ok"><div class="stat-val">${s.safe}</div><div class="stat-lbl">Sécurisée(s)</div></div>
+    <div class="stat-card"><div class="stat-val">${s.avgPoly}<small style="font-size:1rem;color:var(--grey-400)">/${comps.length}</small></div><div class="stat-lbl">Polyvalence moyenne</div></div>
+    <div class="stat-card ${s.pct>=60?'ok':'danger'}"><div class="stat-val">${s.pct}%</div><div class="stat-lbl">Couverture globale ≥ 2</div></div>
+  </div>`;
+
+  if(!emps.length||!comps.length){
+    html+=`<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-txt">Ajoutez des collaborateurs et des compétences via les onglets.</div></div></div></div>`;
+    document.getElementById('main-content').innerHTML=html;return;
+  }
+
+  // ── Légende des métiers (cliquable pour changer la couleur) ──
+  const uniqueRoles=[...new Set(emps.map(e=>e.role))].sort();
+  uniqueRoles.forEach(r=>getRoleColor(r)); // s'assurer que chaque rôle a une couleur
+  const roleLegendItems=uniqueRoles.map(r=>{
+    const col=getRoleColor(r);
+    const rgb=hexToRgb(col);
+    return`<span class="role-legend-item"
+      style="background:rgba(${rgb},.12);border-color:rgba(${rgb},.35);color:${col}"
+      title="Cliquer pour changer la couleur du métier : ${r}">
+      <span class="role-dot" style="background:${col}"></span>
+      ${esc(r)}
+      <input type="color" value="${col}" style="opacity:0;width:0;height:0;position:absolute"
+        id="rc-${btoa(r).replace(/=/g,'')}"
+        oninput="setRoleColor('${esc(r)}',this.value)">
+      <span onclick="document.getElementById('rc-${btoa(r).replace(/=/g,'')}').click()" style="font-size:.65rem;opacity:.6;margin-left:.2rem">✎</span>
+    </span>`;
+  }).join('');
+
+  html+=`<div class="card" style="margin-bottom:.9rem">
+    <div class="card-header" style="padding:.7rem 1.25rem;font-size:.85rem">
+      🎨 Légende des Métiers
+      <span style="font-size:.72rem;color:var(--grey-400);font-weight:400">Cliquez sur ✎ pour changer la couleur d'un métier</span>
+    </div>
+    <div class="card-body" style="padding:.75rem 1.25rem">
+      <div class="role-legend-grid">${roleLegendItems||'<span style="color:var(--grey-400);font-size:.8rem">Aucun métier défini.</span>'}</div>
+    </div>
+  </div>`;
+
+  // ── Thead 2 lignes : ligne 1 = catégories (spanning), ligne 2 = compétences ──
+  const groups=getCompsByCat();
+  // Ligne 1 : coin + catégories + poly
+  let thead=`<thead><tr>
+    <th class="corner-th" rowspan="2">Collaborateur / Compétence</th>`;
+  groups.forEach(g=>{
+    thead+=`<th class="cat-th" colspan="${g.comps.length}" style="background:${g.cat.color}">${esc(g.cat.name)}</th>`;
+  });
+  thead+=`<th class="poly-th" rowspan="2"><span class="poly-th-txt">Indice de Polyvalence</span></th></tr>`;
+  // Ligne 2 : compétences individuelles colorées par catégorie
+  thead+=`<tr>`;
+  groups.forEach(g=>{
+    g.comps.forEach(c=>{
+      thead+=`<th class="comp-th" style="background:${g.cat.color}" title="${esc(c.name)}">
+        <span class="comp-th-txt">${esc(c.name)}</span>
+      </th>`;
+    });
+  });
+  thead+=`</tr></thead>`;
+  // Ordre plat des comps pour les cellules (respecte l'ordre des groupes)
+  const orderedComps=groups.flatMap(g=>g.comps);
+
+  // ── Tbody avec couleur de ligne par métier ──
+  let tbody='<tbody>';
+  emps.forEach(e=>{
+    const poly=getPolyvalence(e.id);
+    const pct=comps.length?Math.round(poly/comps.length*100):0;
+    const pc=poly>=comps.length*.7?'var(--ok)':poly>=comps.length*.4?'#b7770d':'var(--crit)';
+    const roleCol=getRoleColor(e.role);
+    const rgb=hexToRgb(roleCol);
+    tbody+=`<tr style="background:rgba(${rgb},.06)">
+      <td class="emp-td" style="background:rgba(${rgb},.06)">
+        <div class="emp-td-inner">
+          <div class="role-bar" style="background:${roleCol}"></div>
+          <div>
+            <div class="emp-name-cell">${e.name}</div>
+            <div class="emp-role-cell" style="color:${roleCol}">${e.role}</div>
+          </div>
+        </div>
+      </td>`;
+    orderedComps.forEach(c=>{
+      const lvl=skillOf(e.id,c.id);
+      tbody+=`<td id="sc-${e.id}-${c.id}" class="skill-cell" data-l="${lvl}" onclick="cycleSkill('${e.id}','${c.id}')" title="${e.name}\n${c.name}\nNiveau : ${lvl} — ${LVL_LABEL[lvl]}">
+        <span class="sk-num">${lvl}</span><span class="sk-lbl">${LVL_LABEL[lvl]}</span></td>`;
+    });
+    tbody+=`<td id="poly-${e.id}" class="poly-td"><div class="poly-num" style="color:${pc}">${poly}</div><div class="poly-over">/ ${comps.length} (${pct}%)</div></td></tr>`;
+  });
+  tbody+='</tbody>';
+
+  let tfoot=`<tfoot><tr><td class="redund-label-td">📊 Taux de Redondance<br><small style="font-weight:400;opacity:.75">nb. personnes niveau ≥ 2</small></td>`;
+  orderedComps.forEach(c=>{
+    const r=getRedundancy(c.id);
+    tfoot+=`<td id="redund-${c.id}" class="redund-val-td ${r<=1?'crit':'safe'}" title="${c.name} — Redondance : ${r}">${r<=1?'⚠ '+r:r}<span class="r-sub">${r<=1?'CRITIQUE':'Sécurisé'}</span></td>`;
+  });
+  tfoot+=`<td class="redund-val-td redund-corner">—</td></tr></tfoot>`;
+
+  html+=`<div class="card">
+    <div class="card-header">Matrice interactive — ${emps.length} collaborateur(s) × ${comps.length} compétence(s)</div>
+    <div class="matrix-scroll"><table class="matrix-table">${thead}${tbody}${tfoot}</table></div>
+  </div>`;
+  document.getElementById('main-content').innerHTML=html;
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   RENDER : EMPLOYÉS
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+function renderEmployees(){
+  let rows=emps.length?emps.map((e,i)=>{
+    const poly=getPolyvalence(e.id);
+    return`<tr>
+      <td style="width:32px;color:var(--grey-400);font-size:.75rem;text-align:center">${i+1}</td>
+      <td><strong>${e.name}</strong></td>
+      <td style="color:var(--grey-500);font-style:italic">${e.role}</td>
+      <td><span class="badge badge-blue">${poly} / ${comps.length} compétences ≥ 2</span></td>
+      <td><div class="btn-group">
+        <button class="btn btn-secondary btn-sm" onclick="openEditEmployee('${e.id}')">�?�? Modifier</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDeleteEmployee('${e.id}')">🗑 Supprimer</button>
+      </div></td></tr>`;
+  }).join(''):`<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">👥</div><div class="empty-txt">Aucun collaborateur.</div></div></td></tr>`;
+
+  document.getElementById('main-content').innerHTML=`
+    <div class="view-toolbar"><h2>👥 Collaborateurs</h2>
+      <button class="btn btn-primary" onclick="openAddEmployee()">+ Ajouter un collaborateur</button></div>
+    <div class="card"><div class="card-body" style="padding:0">
+      <table class="mgmt-table">
+        <thead><tr><th>#</th><th>Nom</th><th>Fonction</th><th>Polyvalence</th><th>Actions</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div></div>
+    <p style="font-size:.75rem;color:var(--grey-400);margin-top:.5rem">💡 Rendez-vous dans <strong>Matrice</strong> pour renseigner les niveaux de compétence.</p>`;
+}
+
+function openAddEmployee(){
+  openModal('Ajouter un collaborateur',`
+    <div class="form-group"><label class="form-label">Nom complet *</label>
+      <input class="form-control" id="f-name" placeholder="ex : Jean DUPONT" autocomplete="off"></div>
+    <div class="form-group"><label class="form-label">Fonction / Rôle *</label>
+      <input class="form-control" id="f-role" placeholder="ex : Technicien SSI" list="rl" autocomplete="off">
+      <datalist id="rl">${[...new Set(emps.map(e=>e.role))].map(r=>`<option value="${r}">`).join('')}</datalist></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="addEmployee()">✅ Ajouter</button></div>`);
+}
+
+function addEmployee(){
+  const name=document.getElementById('f-name').value.trim();
+  const role=document.getElementById('f-role').value.trim();
+  if(!name){alert('Le nom est obligatoire.');return;}
+  if(!role){alert('La fonction est obligatoire.');return;}
+  const id=uid(); emps.push({id,name,role});
+  skills[id]={}; comps.forEach(c=>{skills[id][c.id]=0;});
+  save();closeModal();renderEmployees();showToast('✅ Collaborateur ajouté.');
+}
+
+function openEditEmployee(id){
+  const e=emps.find(x=>x.id===id); if(!e)return;
+  openModal('Modifier le collaborateur',`
+    <div class="form-group"><label class="form-label">Nom complet *</label>
+      <input class="form-control" id="f-name" value="${esc(e.name)}" autocomplete="off"></div>
+    <div class="form-group"><label class="form-label">Fonction / Rôle *</label>
+      <input class="form-control" id="f-role" value="${esc(e.role)}" list="rl2" autocomplete="off">
+      <datalist id="rl2">${[...new Set(emps.map(x=>x.role))].map(r=>`<option value="${r}">`).join('')}</datalist></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveEmployee('${id}')">💾 Enregistrer</button></div>`);
+}
+
+function saveEmployee(id){
+  const e=emps.find(x=>x.id===id); if(!e)return;
+  const name=document.getElementById('f-name').value.trim();
+  const role=document.getElementById('f-role').value.trim();
+  if(!name||!role){alert('Nom et fonction requis.');return;}
+  e.name=name;e.role=role;save();closeModal();renderEmployees();showToast('✅ Modifications enregistrées.');
+}
+
+function confirmDeleteEmployee(id){
+  const e=emps.find(x=>x.id===id); if(!e)return;
+  openModal('Confirmer la suppression',`
+    <p style="margin-bottom:1rem">Supprimer <strong>${esc(e.name)}</strong> ? Toutes ses données de compétences seront perdues.</p>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-danger" onclick="deleteEmployee('${id}')">🗑 Supprimer définitivement</button></div>`);
+}
+
+function deleteEmployee(id){
+  emps=emps.filter(e=>e.id!==id);delete skills[id];
+  save();closeModal();renderEmployees();showToast('🗑 Collaborateur supprimé.');
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   RENDER : COMPÉTENCES
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+function renderComps(){
+  let rows=comps.length?comps.map((c,i)=>{
+    const r=getRedundancy(c.id);
+    const cls=r<=1?'badge-red':'badge-green';
+    const cat=getCategory(c.categoryId);
+    const catColor=cat?cat.color:'#6c757d';
+    const catName=cat?cat.name:'Sans catégorie';
+    return`<tr>
+      <td style="width:32px;color:var(--grey-400);font-size:.75rem;text-align:center">${i+1}</td>
+      <td><strong>${esc(c.name)}</strong></td>
+      <td><span class="badge ${cls}">${r<=1?'⚠ '+r+' — CRITIQUE':'✓ '+r+' — Sécurisé'}</span></td>
+      <td>
+        <span style="display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .6rem;border-radius:20px;font-size:.75rem;font-weight:600;color:#fff;background:${catColor}">
+          <span style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);display:inline-block"></span>
+          ${esc(catName)}
+        </span>
+      </td>
+      <td><div class="btn-group">
+        <button class="btn btn-secondary btn-sm" onclick="openEditComp('${c.id}')">�?�? Modifier</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDeleteComp('${c.id}')">🗑 Supprimer</button>
+      </div></td></tr>`;
+  }).join(''):`<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">⚡</div><div class="empty-txt">Aucune compétence.</div></div></td></tr>`;
+
+  document.getElementById('main-content').innerHTML=`
+    <div class="view-toolbar"><h2>⚡ Compétences Critiques</h2>
+      <button class="btn btn-primary" onclick="openAddComp()">+ Ajouter une compétence</button></div>
+    <div class="card"><div class="card-body" style="padding:0">
+      <table class="mgmt-table">
+        <thead><tr><th>#</th><th>Nom de la compétence</th><th>Taux de Redondance</th><th>Catégorie</th><th>Actions</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div></div>
+    <p style="font-size:.75rem;color:var(--grey-400);margin-top:.5rem">💡 Supprimer une compétence efface tous les niveaux associés dans la matrice.</p>`;
+}
+
+function openAddComp(){
+  const firstCatId=(config.categories&&config.categories.length)?config.categories[0].id:'';
+  openModal('Ajouter une compétence',`
+    <div class="form-group"><label class="form-label">Nom de la compétence *</label>
+      <input class="form-control" id="f-cname" placeholder="ex : Maintenance Préventive" autocomplete="off">
+      <div class="form-hint">Ce nom apparaîtra en en-tête de colonne dans la matrice.</div></div>
+    <div class="form-group">
+      <label class="form-label">Catégorie</label>
+      <select class="form-control" id="f-catid">${catSelectOptions(firstCatId)}</select>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="addComp()">✅ Ajouter</button></div>`);
+}
+
+function addComp(){
+  const name=document.getElementById('f-cname').value.trim();
+  const categoryId=document.getElementById('f-catid').value||'';
+  if(!name){alert('Le nom est obligatoire.');return;}
+  const id=uid(); comps.push({id,name,categoryId});
+  emps.forEach(e=>{if(!skills[e.id])skills[e.id]={};skills[e.id][id]=0;});
+  save();closeModal();renderComps();showToast('✅ Compétence ajoutée.');
+}
+
+function openEditComp(id){
+  const c=comps.find(x=>x.id===id); if(!c)return;
+  openModal('Modifier la compétence',`
+    <div class="form-group"><label class="form-label">Nom de la compétence *</label>
+      <input class="form-control" id="f-cname" value="${esc(c.name)}" autocomplete="off"></div>
+    <div class="form-group">
+      <label class="form-label">Catégorie</label>
+      <select class="form-control" id="f-catid">${catSelectOptions(c.categoryId||'')}</select>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveComp('${id}')">💾 Enregistrer</button></div>`);
+}
+
+function saveComp(id){
+  const c=comps.find(x=>x.id===id); if(!c)return;
+  const name=document.getElementById('f-cname').value.trim();
+  const categoryId=document.getElementById('f-catid').value||c.categoryId||'';
+  if(!name){alert('Le nom est obligatoire.');return;}
+  c.name=name; c.categoryId=categoryId; delete c.color;
+  save();closeModal();renderComps();showToast('✅ Modifications enregistrées.');
+}
+
+function confirmDeleteComp(id){
+  const c=comps.find(x=>x.id===id); if(!c)return;
+  openModal('Confirmer la suppression',`
+    <p style="margin-bottom:1rem">Supprimer la compétence <strong>${esc(c.name)}</strong> ? Les niveaux de tous les collaborateurs pour cette compétence seront effacés.</p>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-danger" onclick="deleteComp('${id}')">🗑 Supprimer définitivement</button></div>`);
+}
+
+function deleteComp(id){
+  comps=comps.filter(c=>c.id!==id);
+  emps.forEach(e=>{if(skills[e.id])delete skills[e.id][id];});
+  save();closeModal();renderComps();showToast('🗑 Compétence supprimée.');
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   RENDER : PARAMÈTRES
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+function renderSettings(){
+  document.getElementById('main-content').innerHTML=`
+    <div style="max-width:640px">
+      <div class="settings-section">
+        <div class="settings-title">�?� Identité de l'entreprise</div>
+        <div class="card"><div class="card-body">
+          <div class="form-group"><label class="form-label">Nom de l'entreprise</label>
+            <input class="form-control" id="s-company" value="${esc(config.company)}"></div>
+          <div class="form-group"><label class="form-label">Sous-titre (secteur)</label>
+            <input class="form-control" id="s-company-sub" value="${esc(config.companySub)}"></div>
+          <div class="form-actions" style="border:none;padding:0;margin:0">
+            <button class="btn btn-primary" onclick="saveConfig()">💾 Enregistrer</button></div>
+        </div></div></div>
+      <div class="settings-section">
+        <div class="settings-title">📄 Titre du document</div>
+        <div class="card"><div class="card-body">
+          <div class="form-group"><label class="form-label">Titre principal</label>
+            <input class="form-control" id="s-title" value="${esc(config.docTitle)}"></div>
+          <div class="form-group"><label class="form-label">Sous-titre</label>
+            <input class="form-control" id="s-sub" value="${esc(config.docSub)}"></div>
+          <div class="form-actions" style="border:none;padding:0;margin:0">
+            <button class="btn btn-primary" onclick="saveConfig()">💾 Enregistrer</button></div>
+        </div></div></div>
+      <div class="settings-section">
+        <div class="settings-title">🔒 Code d'accès</div>
+        <div class="card"><div class="card-body">
+          <p style="font-size:.82rem;color:var(--grey-500);margin-bottom:.5rem">Le code d'accès actuel est défini dans le fichier HTML (variable <code>ACCESS_CODE</code>).</p>
+          <p style="font-size:.82rem;color:var(--grey-500)">Pour le modifier, ouvrez le fichier <code>.html</code> avec un éditeur de texte et changez la valeur de <code>ACCESS_CODE</code>.</p>
+        </div></div></div>
+      <div class="settings-section">
+        <div class="settings-title">💾 Sauvegarde &amp; Export</div>
+        <div class="card"><div class="card-body">
+          <p style="font-size:.82rem;color:var(--grey-500);margin-bottom:.5rem">Exportez vos données pour les sauvegarder ou les transférer sur un autre poste.</p>
+          <div class="btn-group" style="margin-bottom:1rem">
+            <button class="btn btn-success" onclick="exportData()">⬇�? Exporter (JSON)</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">⬆�? Importer (JSON)</button>
+          </div>
+          <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+          <hr style="margin:.75rem 0;border-color:var(--grey-200)">
+          <p style="font-size:.82rem;font-weight:600;margin-bottom:.4rem">�? Sauvegarde automatique dans un dossier</p>
+          <p style="font-size:.78rem;color:var(--grey-500);margin-bottom:.75rem">Choisissez un dossier : à chaque modification, le fichier JSON sera mis à jour automatiquement. Fonctionne sur Chrome et Edge.</p>
+          <div id="backup-folder-status" style="margin-bottom:.75rem;font-size:.82rem"><span style="color:var(--grey-500)">Aucun dossier configuré</span></div>
+          <button class="btn btn-primary" onclick="chooseBackupFolder()">📂 Choisir le dossier de sauvegarde</button>
+        </div></div></div>
+      <div class="settings-section">
+        <div class="settings-title">⚠�? Zone de danger</div>
+        <div class="danger-zone">
+          <div class="danger-title">Réinitialisation complète</div>
+          <div class="danger-desc">Efface toutes vos données et restaure les données de démonstration. Irréversible.</div>
+          <button class="btn btn-danger" onclick="resetToDefaults(true)">🔄 Réinitialiser avec les données de démo</button>
+        </div></div>
+    </div>`;
+  initFolderStatus();
+}
+
+function saveConfig(){
+  config.company=document.getElementById('s-company').value.trim()||config.company;
+  config.companySub=document.getElementById('s-company-sub').value.trim();
+  config.docTitle=document.getElementById('s-title').value.trim()||config.docTitle;
+  config.docSub=document.getElementById('s-sub').value.trim();
+  save();applyConfig();showToast('✅ Paramètres enregistrés.');
+}
+
+function exportData(){
+  const blob=new Blob([JSON.stringify({config,comps,emps,skills},null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`polyvalence_${(config.company||'export').replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();URL.revokeObjectURL(url);
+  showToast('✅ Fichier exporté avec succès.');
+}
+
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(!d.comps||!d.emps||!d.skills)throw new Error('Format invalide');
+      config=d.config||config;comps=d.comps;emps=d.emps;skills=d.skills;
+      save();applyConfig();showView('settings');showToast('✅ Données importées avec succès.');
+    }catch(err){alert('�?� Erreur lors de l\'import : '+err.message);}
+  };
+  reader.readAsText(file);e.target.value='';
+}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   MODAL
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+function openModal(title,body){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=body;
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>{const f=document.querySelector('#modal-body .form-control');if(f)f.focus();},80);
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function handleOverlayClick(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   UTILS
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+   INIT
+�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */
+document.addEventListener('DOMContentLoaded',()=>{
+  // Injecter le logo partout
+  document.getElementById('lock-logo').innerHTML = makeLogo(90);
+  document.getElementById('header-logo').innerHTML = makeLogo(52);
+
+  // Vérifier session
+  if(sessionStorage.getItem('def_auth')==='1'){
+    document.getElementById('lock-screen').style.display='none';
+    document.getElementById('app-shell').style.display='flex';
+  }
+
+  // Charger les données
+  load(); applyConfig();
+  const ts=localStorage.getItem(KEY+'_ts');
+  if(ts){const el=document.getElementById('last-update');if(el)el.textContent=ts;}
+
+  showView('matrix');
+  initFolderStatus();
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeModal();
+  if(e.key==='Enter'&&document.getElementById('lock-screen').style.display!=='none')checkCode();
+});
+
+</script>
+</body>
+</html>

@@ -1,17 +1,15 @@
 import type { Session } from '@supabase/supabase-js';
-import DashboardGuard from '../components/dashboard/DashboardGuard';
-import DashboardLayout from '../components/dashboard/DashboardLayout';
-import ParametresEntreprise from '../dashboard/ParametresEntreprise';
+import { DashboardGuard } from '../components/dashboard/DashboardGuard';
 import { useCompany } from '../hooks/useCompany';
+import ParametresEntreprise from '../dashboard/ParametresEntreprise';
 
 interface Props { session: Session | null }
 
 function ParametresContent({ session }: Props) {
   const { company, membership } = useCompany(session);
+  if (!company) return null;
   return (
-    <DashboardLayout company={company} membership={membership}>
-      <ParametresEntreprise companyId={company.id} isAdmin={membership?.role === 'admin'} />
-    </DashboardLayout>
+    <ParametresEntreprise companyId={company.id} isAdmin={membership?.role === 'admin'} />
   );
 }
 

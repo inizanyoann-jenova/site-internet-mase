@@ -1,18 +1,14 @@
 import type { Session } from '@supabase/supabase-js';
-import DashboardGuard from '../components/dashboard/DashboardGuard';
-import DashboardLayout from '../components/dashboard/DashboardLayout';
-import JournalAudit from '../dashboard/JournalAudit';
+import { DashboardGuard } from '../components/dashboard/DashboardGuard';
 import { useCompany } from '../hooks/useCompany';
+import JournalAudit from '../dashboard/JournalAudit';
 
 interface Props { session: Session | null }
 
 function JournalContent({ session }: Props) {
-  const { company, membership } = useCompany(session);
-  return (
-    <DashboardLayout company={company} membership={membership}>
-      <JournalAudit companyId={company.id} />
-    </DashboardLayout>
-  );
+  const { company } = useCompany(session);
+  if (!company) return null;
+  return <JournalAudit companyId={company.id} />;
 }
 
 export default function DashboardJournalAuditPage({ session }: Props) {
