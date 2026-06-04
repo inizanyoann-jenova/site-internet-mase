@@ -1,5 +1,5 @@
 // src/dashboard/JournalAudit.tsx
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
 interface AuditEntry {
@@ -139,8 +139,8 @@ export default function JournalAudit({ companyId }: Props) {
             </thead>
             <tbody>
               {entries.map(e => (
-                <>
-                  <tr key={e.id}>
+                <React.Fragment key={e.id}>
+                  <tr>
                     <td className="whitespace-nowrap text-xs text-gray-500">{formatDate(e.created_at)}</td>
                     <td className="text-sm">{TABLE_LABELS[e.table_name] ?? e.table_name}</td>
                     <td>
@@ -160,7 +160,7 @@ export default function JournalAudit({ companyId }: Props) {
                     </td>
                   </tr>
                   {expanded === e.id && (
-                    <tr key={`${e.id}-detail`}>
+                    <tr>
                       <td colSpan={6} className="bg-gray-50 p-3">
                         <div className="grid grid-cols-2 gap-4 text-xs">
                           {e.old_data && (
@@ -183,7 +183,7 @@ export default function JournalAudit({ companyId }: Props) {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>
