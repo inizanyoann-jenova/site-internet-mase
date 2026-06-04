@@ -24,8 +24,12 @@ export default function DashboardOnboardingPage({ session }: Props) {
     }
 
     const check = async () => {
-      const { data, error: queryErr } = await supabase.rpc('get_my_dashboard_access');
-      console.log('[DEBUG] RPC result:', JSON.stringify({ data, error: queryErr?.message, userId: session.user.id }));
+      const { data, error: queryErr } = await supabase
+        .from('company_members')
+        .select('company_id, company:companies(id, name)')
+        .eq('user_id', session.user.id)
+        .not('accepted_at', 'is', null)
+        .maybeSingle();
 
       if (queryErr) {
         console.error('Erreur vérification accès:', queryErr.message);
@@ -35,7 +39,11 @@ export default function DashboardOnboardingPage({ session }: Props) {
 
       if (data?.company_id) {
         setCompanyId(data.company_id);
-        if (data.company_name && data.company_name !== 'Mon entreprise') {
+        const companyRaw = data.company;
+        const companyName = Array.isArray(companyRaw)
+          ? companyRaw[0]?.name
+          : (companyRaw as { name?: string } | null)?.name;
+        if (companyName && companyName !== 'Mon entreprise') {
           navigate('/dashboard');
           return;
         }
