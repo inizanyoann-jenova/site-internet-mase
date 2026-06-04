@@ -24,6 +24,16 @@ import DashboardQualitePage from './pages/DashboardQualitePage';
 import DashboardRHPage from './pages/DashboardRHPage';
 import DashboardReunionsPage from './pages/DashboardReunionsPage';
 import DashboardExportPage from './pages/DashboardExportPage';
+import DashboardParametresPage from './pages/DashboardParametresPage';
+import DashboardJournalAuditPage from './pages/DashboardJournalAuditPage';
+import DashboardEnvironnementPage from './pages/DashboardEnvironnementPage';
+import DashboardFournisseursPage from './pages/DashboardFournisseursPage';
+import DashboardRGPDPage from './pages/DashboardRGPDPage';
+import DashboardCalendrierPage from './pages/DashboardCalendrierPage';
+import DashboardVeillePage from './pages/DashboardVeillePage';
+import DashboardNotificationsPage from './pages/DashboardNotificationsPage';
+import DashboardRecherchePage from './pages/DashboardRecherchePage';
+import DashboardRisqueChantierPage from './pages/DashboardRisqueChantierPage';
 import './index.css';
 
 function Root() {
@@ -57,6 +67,16 @@ function Root() {
           <Route path="/dashboard/rh" element={<DashboardRHPage session={session} />} />
           <Route path="/dashboard/reunions" element={<DashboardReunionsPage session={session} />} />
           <Route path="/dashboard/export" element={<DashboardExportPage session={session} />} />
+          <Route path="/dashboard/parametres" element={<DashboardParametresPage session={session} />} />
+          <Route path="/dashboard/journal-audit" element={<DashboardJournalAuditPage session={session} />} />
+          <Route path="/dashboard/environnement" element={<DashboardEnvironnementPage session={session} />} />
+          <Route path="/dashboard/fournisseurs" element={<DashboardFournisseursPage session={session} />} />
+          <Route path="/dashboard/rgpd" element={<DashboardRGPDPage session={session} />} />
+          <Route path="/dashboard/calendrier" element={<DashboardCalendrierPage session={session} />} />
+          <Route path="/dashboard/veille" element={<DashboardVeillePage session={session} />} />
+          <Route path="/dashboard/notifications" element={<DashboardNotificationsPage session={session} />} />
+          <Route path="/dashboard/recherche" element={<DashboardRecherchePage session={session} />} />
+          <Route path="/dashboard/risque-chantier" element={<DashboardRisqueChantierPage session={session} />} />
         </Routes>
       </BrowserRouter>
     </SessionContext.Provider>
