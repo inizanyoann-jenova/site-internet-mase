@@ -12,6 +12,7 @@
 Ajouter un nouvel outil payant à la plateforme MASE : un **générateur guidé de Cartographie des Processus** conforme au référentiel MASE V2024. L'outil est conçu pour être utilisé par une personne sans connaissance préalable en gestion des processus.
 
 **Valeur délivrée :**
+
 - Une cartographie visuelle au format standard ISO 9001 / MASE (client gauche/droite, pilotage haut, réalisation milieu, support bas)
 - Des fiches de processus détaillées avec objectifs SMART, KPIs, risques — conformes aux 5 axes MASE V2024
 - Un document PDF bundle complet remis à l'auditeur MASE
@@ -32,7 +33,7 @@ Ajouter un nouvel outil payant à la plateforme MASE : un **générateur guidé 
 
 L'outil suit une logique en **deux phases distinctes**, avec l'IA intégrée à trois niveaux :
 
-```
+```text
 [Introduction pédagogique]
         ↓
 [PHASE 1 : Cartographie] → PDF cartographie visuelle
@@ -59,19 +60,34 @@ Avant toute saisie, l'outil affiche une page d'accueil qui explique en langage z
 
 ## 5. Intégration IA — 3 niveaux
 
-### Niveau 1 — Génération du premier jet au démarrage
+### Niveau 1 — Recherche web réelle + génération du premier jet
 
 L'utilisateur saisit : nom de l'entreprise + secteur d'activité + ville.
 
-L'IA (Mistral Large via `@mistralai/mistralai`) génère un premier jet de cartographie complète basé sur :
+**Implémentation :** une Supabase Edge Function (Deno) appelle l'**API Mistral Agents** avec l'outil `web_search` natif (disponible en TypeScript, inclus dans l'abonnement Mistral existant). L'agent :
 
-1. Le **secteur d'activité** saisi (principal signal de génération)
-2. Le **nom et la ville** de l'entreprise — Mistral génère à partir de sa connaissance générale du secteur et peut mentionner des éléments typiques d'entreprises similaires. **Attention : Mistral Large n'a pas d'accès web natif**, il ne fait donc pas une vraie recherche en ligne sur l'entreprise. La génération est basée sur le secteur, pas sur des données publiques de l'entreprise spécifique.
-3. Les 8 modèles sectoriels codés en dur dans l'application servent de base de prompting pour guider la génération.
+1. Lance une **vraie recherche web** sur l'entreprise (site officiel, LinkedIn, Societe.com, Pages Jaunes, annuaires professionnels)
+2. Extrait les informations clés : activités, taille, implantations, métiers, secteur précis
+3. Génère un premier jet de cartographie complète (processus pilotage + réalisation + support) personnalisé à partir des données trouvées
+4. Indique dans la réponse si la recherche a abouti (*"Basé sur une recherche web de votre entreprise"*) ou non (*"Entreprise non trouvée — modèle typique du secteur utilisé"*)
 
-L'utilisateur voit le premier jet et choisit : "✓ Utiliser comme base" ou "Modifier". Il ne part jamais d'une page blanche.
+```typescript
+// supabase/functions/generate-process-map/index.ts (schéma)
+const agent = await mistral.beta.agents.create({
+  model: 'mistral-large-latest',
+  tools: [{ type: 'web_search' }],
+  instructions: `Expert MASE. Recherche l'entreprise donnée, puis génère
+                 une cartographie des processus conforme MASE V2024.`
+});
+const response = await mistral.beta.conversations.start({
+  agentId: agent.id,
+  inputs: `Entreprise: ${companyName}, Ville: ${city}, Secteur: ${sector}`
+});
+```
 
-**Fallback :** si l'appel Mistral échoue (réseau, quota), l'utilisateur choisit directement parmi 8 modèles sectoriels pré-remplis ou "page blanche guidée".
+L'utilisateur voit le premier jet avec les sources trouvées et choisit : "✓ Utiliser comme base" ou "Modifier". Il ne part jamais d'une page blanche.
+
+**Fallback :** si Mistral échoue (réseau, quota) ou si l'entreprise est totalement inconnue, l'utilisateur choisit parmi 8 modèles sectoriels pré-remplis ou "page blanche guidée".
 
 ### Niveau 2 — Reformulation SMART automatique
 
@@ -96,6 +112,7 @@ Présent sur les questions difficiles uniquement (risques, activités internes, 
 ## 6. Phase 1 — Construire la cartographie (8 étapes)
 
 ### Étape 1 — Votre entreprise
+
 1. Nom de l'entreprise
 2. Secteur d'activité principal (liste + saisie libre)
 3. Effectif (nombre de salariés)
@@ -103,22 +120,27 @@ Présent sur les questions difficiles uniquement (risques, activités internes, 
 5. Date de création du document
 
 ### Étape 2 — Point de départ *(IA Niveau 1 ici)*
+
 - Si l'IA a généré un premier jet : affichage pour validation/modification
 - Sinon : choix parmi 8 secteurs types (BTP, maintenance industrielle, nettoyage, électricité/installation, bureau d'études, transport/logistique, industrie/fabrication, prestation de service) ou "page blanche"
 - Chaque secteur affiche un exemple miniature de cartographie pour repère visuel
 
 ### Étape 3 — Processus de Pilotage
+
 Explication pédagogique : *"Le pilotage regroupe les activités de décision stratégique — celles qui donnent le cap à toute l'entreprise (direction, revue de direction, amélioration continue…)."*
 
 Pour chaque processus de pilotage (2 à 4 en général) :
+
 1. Nom du processus
 2. Pilote (prénom + poste)
 3. Rôle en une phrase
 
 ### Étape 4 — Processus de Réalisation
+
 Explication pédagogique : *"Ce sont vos activités principales — celles pour lesquelles vos clients vous paient. Elles transforment une demande en un résultat concret."*
 
 Pour chaque processus de réalisation (3 à 7 en général) :
+
 1. Nom du processus
 2. Position dans la séquence : après quel processus ? ou en parallèle avec quel autre ?
 3. Élément entrant : qu'est-ce que ce processus reçoit pour démarrer ? *(MASE Axe 3)*
@@ -126,15 +148,18 @@ Pour chaque processus de réalisation (3 à 7 en général) :
 5. Responsable (prénom + poste)
 
 **Architecture supportée :**
+
 - Séquentielle (A → B → C → D)
 - Parallèle partielle (A → [B // C] → D)
 - Multi-parallèle (A → [B // C // D] → E)
 - Itérative (avec boucle de validation)
 
 ### Étape 5 — Processus Support
+
 Explication pédagogique : *"Les processus support ne délivrent pas directement au client, mais ils fournissent tout ce dont vos équipes ont besoin pour travailler : les personnes, le matériel, les outils…"*
 
 Pour chaque processus support (3 à 6 en général) :
+
 1. Nom du processus
 2. Pilote (prénom + poste)
 3. Quels processus de réalisation ce support alimente-t-il ? (sélection multiple)
@@ -160,6 +185,7 @@ Affichage de la cartographie complète au format standard :
 - L'utilisateur peut cliquer sur un processus pour le modifier avant export
 
 ### Étape 8 — Export Phase 1
+
 - **PDF cartographie** au format A3 paysage (ou A4 paysage) — standard MASE
 - Données sauvegardées en Supabase
 - Invitation à démarrer la Phase 2
@@ -173,18 +199,21 @@ Pour **chaque processus** identifié en Phase 1 (pilotage + réalisation + suppo
 **Ordre de traitement :** réalisation en premier (cœur du métier), puis pilotage, puis support.
 
 ### Bloc A — Identité et finalité *(~4 questions)*
+
 1. Nom du processus *(pré-rempli)*
 2. Pilote du processus *(pré-rempli)*
 3. Participants / acteurs du processus *(MASE Axe 2)* — liste des personnes ou fonctions impliquées
 4. Finalité : en une phrase simple, à quoi sert ce processus ? *(bouton "✨ Aide IA" disponible)*
 
 ### Bloc B — Flux et activités *(~4 questions)*
+
 5. Données / documents d'entrée *(pré-rempli depuis Phase 1)* — possibilité d'enrichir *(MASE Axe 3)*
 6. Activités principales : les 3 à 6 grandes étapes internes du processus *(bouton "✨ Aide IA" disponible)*
 7. Données / documents de sortie *(pré-rempli depuis Phase 1)* — possibilité d'enrichir
 8. Ressources nécessaires : humaines, matérielles, logiciels *(bouton "✨ Aide IA" disponible)*
 
 ### Bloc C — Objectif SMART *(~5 questions — IA Niveau 2)* *(MASE Axes 1 & 4)*
+
 9a. Objectif en langage naturel → reformulé automatiquement par l'IA en objectif SMART
 9b. Indicateur de mesure (comment mesure-t-on ?) — pré-rempli par l'IA, modifiable
 9c. Valeur cible chiffrée (ex : 95%, 0 accident, < 48h…)
@@ -192,10 +221,12 @@ Pour **chaque processus** identifié en Phase 1 (pilotage + réalisation + suppo
 9e. Échéance pour atteindre cet objectif (date)
 
 **Indicateurs complémentaires (KPIs de suivi) :**
+
 - Indicateur de résultat (lagging) : mesure après coup (ex : taux de livraison dans les délais)
 - Indicateur de suivi/proactif (leading) : mesure en cours d'action (ex : nb de réunions de suivi chantier) *(MASE V2024 : les deux types sont exigés)*
 
 ### Bloc D — Risques et documentation *(~3 questions)*
+
 10. Risques principaux : 1 à 3 risques pouvant affecter ce processus *(bouton "✨ Aide IA" disponible)* *(MASE Axe 3)*
 11. Documents associés : procédures, instructions de travail, formulaires liés à ce processus
 12. Fréquence de révision de la fiche (annuelle recommandée) *(MASE Axe 5)*
@@ -207,7 +238,9 @@ Pour **chaque processus** identifié en Phase 1 (pilotage + réalisation + suppo
 ## 8. Format visuel de la cartographie (PDF généré)
 
 ### Standard respecté
+
 Format ISO 9001 / MASE standard :
+
 - CLIENT (besoins/exigences) à **gauche** — flèche entrante
 - CLIENT (satisfaction/livrables) à **droite** — flèche sortante
 - PROCESSUS DE PILOTAGE en **haut** — flèches vers le bas (oriente)
@@ -221,6 +254,7 @@ Les processus en parallèle sont affichés côte à côte verticalement dans le 
 Chaque flèche entre deux processus de réalisation porte un libellé indiquant l'élément qui transite (document, produit, décision).
 
 ### Format de sortie
+
 - Cartographie : PDF A3 paysage (ou A4 paysage selon préférence)
 - Fiches processus : PDF A4 portrait, une fiche par page
 - Bundle : PDF multi-pages (cartographie + toutes les fiches)
@@ -308,7 +342,8 @@ RLS activé sur les deux tables :
 - **Auth :** Google OAuth Supabase (existant)
 - **Paiement :** Stripe Checkout paiement unique (existant, même pattern que Politique SSE)
 - **PDF :** `@react-pdf/renderer` (existant)
-- **IA :** `@mistralai/mistralai` avec modèle `mistral-large-latest` (existant)
+- **IA :** `@mistralai/mistralai` — Mistral Agents API avec outil `web_search` natif (recherche réelle) + `mistral-large-latest` pour SMART et aide à la demande
+- **Recherche entreprise :** Supabase Edge Function appelant l'API Mistral Agents avec `web_search` (pas de clé API externe supplémentaire)
 - **Base de données :** Supabase — 2 nouvelles tables (`process_maps`, `process_sheets`)
 
 ---
@@ -326,7 +361,7 @@ RLS activé sur les deux tables :
 
 ## 14. Parcours utilisateur résumé
 
-```
+```text
 Landing /cartographie (page marketing)
     ↓ [Acheter — Stripe]
     ↓ [Connexion Google si pas connecté]
