@@ -77,12 +77,7 @@ export default function DashboardPurchasePage({ session }: Props) {
     if (!session) return;
     // Redirect if user already has an active company
     const check = async () => {
-      const { data } = await supabase
-        .from('company_members')
-        .select('company_id')
-        .eq('user_id', session.user.id)
-        .not('accepted_at', 'is', null)
-        .maybeSingle();
+      const { data } = await supabase.rpc('get_my_dashboard_access');
       if (data?.company_id) navigate('/dashboard');
     };
     check();

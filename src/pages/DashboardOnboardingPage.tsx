@@ -24,12 +24,7 @@ export default function DashboardOnboardingPage({ session }: Props) {
     }
 
     const check = async () => {
-      const { data, error: queryErr } = await supabase
-        .from('company_members')
-        .select('company_id, company:companies(id, name)')
-        .eq('user_id', session.user.id)
-        .not('accepted_at', 'is', null)
-        .maybeSingle();
+      const { data, error: queryErr } = await supabase.rpc('get_my_dashboard_access');
 
       if (queryErr) {
         console.error('Erreur vérification accès:', queryErr.message);
@@ -39,11 +34,7 @@ export default function DashboardOnboardingPage({ session }: Props) {
 
       if (data?.company_id) {
         setCompanyId(data.company_id);
-        const companyRaw = data.company;
-        const companyName = Array.isArray(companyRaw)
-          ? companyRaw[0]?.name
-          : (companyRaw as { name?: string } | null)?.name;
-        if (companyName && companyName !== 'Mon entreprise') {
+        if (data.company_name && data.company_name !== 'Mon entreprise') {
           navigate('/dashboard');
           return;
         }
@@ -63,7 +54,7 @@ export default function DashboardOnboardingPage({ session }: Props) {
 
     const { error: updateErr } = await supabase
       .from('companies')
-      .update({ name: name.trim(), siret: siret.trim() || null })
+      .update({ name: name.trim() })
       .eq('id', companyId);
 
     setLoading(false);

@@ -45,12 +45,7 @@ export function useCompany(session: Session | null): CompanyState & { refetch: (
     setState((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const { data, error } = await supabase
-        .from('company_members')
-        .select('*, company:companies(*)')
-        .eq('user_id', session.user.id)
-        .not('accepted_at', 'is', null)
-        .maybeSingle();
+      const { data, error } = await supabase.rpc('get_my_dashboard_access');
 
       if (error) throw error;
 
@@ -59,13 +54,24 @@ export function useCompany(session: Session | null): CompanyState & { refetch: (
         return;
       }
 
-      const { company, ...membershipData } = data;
-      setState({
-        company: company as Company,
-        membership: { ...membershipData, company } as CompanyMember,
-        isLoading: false,
-        error: null,
-      });
+      const company: Company = {
+        id: data.company_id,
+        name: data.company_name,
+        siret: null,
+        subscription_status: data.subscription_status,
+        tool_slug: data.tool_slug,
+        admin_user_id: data.admin_user_id,
+      };
+      const membership: CompanyMember = {
+        id: data.member_id,
+        company_id: data.company_id,
+        user_id: session.user.id,
+        email: data.member_email,
+        role: data.member_role,
+        accepted_at: data.member_accepted_at,
+        company,
+      };
+      setState({ company, membership, isLoading: false, error: null });
     } catch (err) {
       setState({ company: null, membership: null, isLoading: false, error: err instanceof Error ? err : new Error('Unknown error') });
     }
