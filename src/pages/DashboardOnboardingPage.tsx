@@ -24,7 +24,7 @@ export default function DashboardOnboardingPage({ session }: Props) {
     }
 
     const check = async () => {
-      const { data, error: queryErr } = await supabase.rpc('get_my_dashboard_access');
+      const { data, error: queryErr } = await supabase.rpc('get_my_dashboard_access', { p_user_id: session.user.id });
 
       if (queryErr) {
         console.error('Erreur vérification accès:', queryErr.message);

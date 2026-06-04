@@ -45,7 +45,7 @@ export function useCompany(session: Session | null): CompanyState & { refetch: (
     setState((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const { data, error } = await supabase.rpc('get_my_dashboard_access');
+      const { data, error } = await supabase.rpc('get_my_dashboard_access', { p_user_id: session.user.id });
 
       if (error) throw error;
 
