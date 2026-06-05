@@ -10,6 +10,7 @@ import Step3Steps from './Step3Steps';
 import Step4Risks from './Step4Risks';
 import Step5Approval from './Step5Approval';
 import Step6Preview from './Step6Preview';
+import Step7Export from './Step7Export';
 
 interface Props {
   session: Session;
@@ -101,7 +102,7 @@ export default function ProcedureWizard({ session, procedure, editDocId, onDone 
         approvers: next.approvers,
         revisions: next.revisions,
         revisionFrequency: next.revisionFrequency,
-        phaseCompleted: step === 6,
+        phaseCompleted: step === 7,
       });
       if (!next.savedDocId) setState((prev) => ({ ...prev, savedDocId: saved.id }));
     } catch (e) {
@@ -109,7 +110,7 @@ export default function ProcedureWizard({ session, procedure, editDocId, onDone 
     } finally {
       setIsSaving(false);
     }
-    if (step < 6) setStep((s) => s + 1);
+    if (step < 7) setStep((s) => s + 1);
     else onDone();
   };
 
@@ -124,7 +125,7 @@ export default function ProcedureWizard({ session, procedure, editDocId, onDone 
       </nav>
       <div className="mx-auto max-w-5xl px-6 py-8">
         <div className="mb-8">
-          <WizardProgress currentStep={step} totalSteps={6} />
+          <WizardProgress currentStep={step} totalSteps={7} />
         </div>
         {step === 1 && <Step1General {...stepProps} />}
         {step === 2 && <Step2Context {...stepProps} />}
@@ -132,6 +133,7 @@ export default function ProcedureWizard({ session, procedure, editDocId, onDone 
         {step === 4 && <Step4Risks {...stepProps} />}
         {step === 5 && <Step5Approval {...stepProps} />}
         {step === 6 && <Step6Preview {...stepProps} />}
+        {step === 7 && <Step7Export {...stepProps} />}
       </div>
     </div>
   );
