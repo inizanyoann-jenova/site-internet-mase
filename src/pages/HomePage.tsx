@@ -156,6 +156,26 @@ export default function HomePage() {
             </Link>
           </div>
 
+          {/* Cartographie des Processus — disponible */}
+          <div className="rounded-xl bg-white p-6 shadow-sm border border-gray-100 flex flex-col gap-3">
+            <div className="text-3xl">🗺️</div>
+            <h3 className="font-bold text-gray-800 text-lg">Cartographie des Processus</h3>
+            <p className="text-sm text-gray-500 flex-1">
+              Créez votre cartographie MASE V2024 et vos fiches de processus avec objectifs SMART,
+              guidé étape par étape par l'IA.
+            </p>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-gray-700">49 € — accès à vie</span>
+              <a
+                href="/cartographie"
+                className="rounded-lg px-4 py-2 text-sm font-bold text-white"
+                style={{ backgroundColor: 'var(--mase-primary)' }}
+              >
+                Découvrir →
+              </a>
+            </div>
+          </div>
+
           {/* SMI Dashboard — disponible */}
           <div
             className="flex flex-col items-center rounded-2xl p-7 text-center transition-all duration-200 hover:-translate-y-1 relative"
