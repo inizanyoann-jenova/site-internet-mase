@@ -14,7 +14,7 @@ interface UseCartographieReturn {
   isLoading: boolean;
   error: string | null;
   saveMap: (data: Partial<ProcessMap>) => Promise<ProcessMap>;
-  saveSheet: (sheet: Omit<ProcessSheet, 'id'>) => Promise<ProcessSheet>;
+  saveSheet: (sheet: Omit<ProcessSheet, 'id'> & { id?: string }) => Promise<ProcessSheet>;
   getSheets: (mapId: string) => Promise<ProcessSheet[]>;
   callGenerateProcessMap: (payload: GenerateProcessMapPayload) => Promise<GenerateProcessMapResult>;
   callReformulateSmart: (payload: ReformulateSmartPayload) => Promise<ReformulateSmartResult>;
@@ -60,10 +60,11 @@ export function useCartographie(session: Session | null): UseCartographieReturn 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetch = useCallback(async () => {
+  const fetchMap = useCallback(async () => {
     if (!session) { setMap(null); return; }
     setIsLoading(true);
     try {
+      setError(null);
       const { data, error: err } = await supabase
         .from('process_maps')
         .select('*')
@@ -79,7 +80,7 @@ export function useCartographie(session: Session | null): UseCartographieReturn 
     }
   }, [session]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => { fetchMap(); }, [fetchMap]);
 
   const saveMap = useCallback(async (data: Partial<ProcessMap>): Promise<ProcessMap> => {
     if (!session) throw new Error('Non connecté');
@@ -95,8 +96,8 @@ export function useCartographie(session: Session | null): UseCartographieReturn 
     return result;
   }, [session]);
 
-  const saveSheet = useCallback(async (sheet: Omit<ProcessSheet, 'id'>): Promise<ProcessSheet> => {
-    const row = {
+  const saveSheet = useCallback(async (sheet: Omit<ProcessSheet, 'id'> & { id?: string }): Promise<ProcessSheet> => {
+    const row: Record<string, unknown> = {
       map_id: sheet.mapId,
       process_type: sheet.process.type,
       process_name: sheet.process.name,
@@ -115,6 +116,7 @@ export function useCartographie(session: Session | null): UseCartographieReturn 
       documents: sheet.documents,
       revision_frequency: sheet.revisionFrequency,
     };
+    if (sheet.id !== undefined) row.id = sheet.id;
     const { data, error: err } = await supabase
       .from('process_sheets')
       .upsert(row, { onConflict: 'id' })
@@ -134,14 +136,14 @@ export function useCartographie(session: Session | null): UseCartographieReturn 
       id: row.id as string,
       mapId: row.map_id as string,
       process: {
-        id: row.id as string,
+        id: '',
         type: row.process_type as ProcessSheet['process']['type'],
         name: row.process_name as string,
         pilotName: row.pilot_name as string,
         pilotRole: row.pilot_role as string,
       },
       participants: (row.participants as string[]) ?? [],
-      purpose: row.purpose as string,
+      purpose: (row.purpose as string) ?? '',
       inputs: (row.inputs as string[]) ?? [],
       activities: (row.activities as string[]) ?? [],
       outputs: (row.outputs as string[]) ?? [],
@@ -149,11 +151,11 @@ export function useCartographie(session: Session | null): UseCartographieReturn 
       smartObjective: (row.smart_objective as ProcessSheet['smartObjective']) ?? {
         rawText: '', objectiveText: '', indicator: '', target: '', frequency: '', deadline: '',
       },
-      kpiLagging: row.kpi_lagging as string,
-      kpiLeading: row.kpi_leading as string,
+      kpiLagging: (row.kpi_lagging as string) ?? '',
+      kpiLeading: (row.kpi_leading as string) ?? '',
       risks: (row.risks as string[]) ?? [],
       documents: (row.documents as string[]) ?? [],
-      revisionFrequency: row.revision_frequency as string,
+      revisionFrequency: (row.revision_frequency as string) ?? 'Annuelle',
     }));
   }, []);
 
@@ -163,7 +165,7 @@ export function useCartographie(session: Session | null): UseCartographieReturn 
   ): Promise<T> => {
     const { data, error: err } = await supabase.functions.invoke(name, { body: payload });
     if (err) throw err;
-    if (data.error) throw new Error(data.error);
+    if (data?.error) throw new Error(data.error);
     return data as T;
   }, []);
 
@@ -186,6 +188,6 @@ export function useCartographie(session: Session | null): UseCartographieReturn 
     map, isLoading, error,
     saveMap, saveSheet, getSheets,
     callGenerateProcessMap, callReformulateSmart, callAiAssist,
-    refetch: fetch,
+    refetch: fetchMap,
   };
 }
