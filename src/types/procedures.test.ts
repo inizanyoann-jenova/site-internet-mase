@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { PROCEDURE_TEMPLATES } from './procedures';
 import type {
   StepDefinition, ProcedureDoc, RiskItem, Approver, Revision,
 } from './procedures';
@@ -75,7 +76,6 @@ describe('procedures types', () => {
   });
 
   it('PROCEDURE_TEMPLATES contient au moins 5 modèles', () => {
-    const { PROCEDURE_TEMPLATES } = require('./procedures.ts');
     expect(PROCEDURE_TEMPLATES.length).toBeGreaterThanOrEqual(5);
     expect(PROCEDURE_TEMPLATES[0]).toHaveProperty('label');
     expect(PROCEDURE_TEMPLATES[0]).toHaveProperty('doc');
