@@ -96,3 +96,17 @@ body {
   display: flex; justify-content: space-between;
   align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
 }
+
+.input-field {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.input-field:focus {
+  border-color: var(--mase-primary);
+  box-shadow: 0 0 0 2px rgba(30, 77, 123, 0.15);
+}
