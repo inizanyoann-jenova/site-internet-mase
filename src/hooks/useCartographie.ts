@@ -9,7 +9,7 @@ import type {
   AiAssistPayload, AiAssistResult,
 } from '../types/cartographie';
 
-interface UseCartographieReturn {
+export interface UseCartographieReturn {
   map: ProcessMap | null;
   isLoading: boolean;
   error: string | null;

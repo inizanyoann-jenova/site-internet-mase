@@ -35,6 +35,7 @@ import DashboardNotificationsPage from './pages/DashboardNotificationsPage';
 import DashboardRecherchePage from './pages/DashboardRecherchePage';
 import DashboardRisqueChantierPage from './pages/DashboardRisqueChantierPage';
 import CartographieLandingPage from './pages/CartographieLandingPage';
+import CartographieWizardPage from './pages/CartographieWizardPage';
 import './index.css';
 
 function Root() {
@@ -79,6 +80,7 @@ function Root() {
           <Route path="/dashboard/recherche" element={<DashboardRecherchePage session={session} />} />
           <Route path="/dashboard/risque-chantier" element={<DashboardRisqueChantierPage session={session} />} />
           <Route path="/cartographie" element={<CartographieLandingPage />} />
+          <Route path="/cartographie/wizard" element={<CartographieWizardPage />} />
         </Routes>
       </BrowserRouter>
     </SessionContext.Provider>
