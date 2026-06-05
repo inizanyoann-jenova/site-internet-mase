@@ -1,27 +1,54 @@
 // src/pages/ProceduresWizardPage.tsx
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Session } from '@supabase/supabase-js';
 import { SessionContext } from '../contexts/SessionContext';
 import { useProcedure } from '../hooks/useProcedure';
+import ProcedureList from '../components/procedures/list/ProcedureList';
+import ProcedureWizard from '../components/procedures/wizard/ProcedureWizard';
+
+type Screen = 'list' | 'wizard';
 
 export default function ProceduresWizardPage() {
   const session = useContext(SessionContext) as Session | null;
   const navigate = useNavigate();
   const procedure = useProcedure(session);
+  const [screen, setScreen] = useState<Screen>('list');
+  const [editDocId, setEditDocId] = useState<string | undefined>();
 
   if (!session) {
     navigate('/procedures');
     return null;
   }
 
+  const handleExportJSON = () => {
+    const blob = new Blob([JSON.stringify(procedure.docs, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `MASE_Procedures_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+  };
+
+  if (screen === 'wizard') {
+    return (
+      <ProcedureWizard
+        session={session}
+        procedure={procedure}
+        editDocId={editDocId}
+        onDone={() => { setScreen('list'); setEditDocId(undefined); }}
+      />
+    );
+  }
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-      <h1 className="text-2xl font-bold text-gray-900">Wizard Procédures</h1>
-      <p className="text-gray-500">
-        {procedure.isLoading ? 'Chargement…' : `${procedure.docs.length} procédure(s) sauvegardée(s)`}
-      </p>
-      <p className="text-sm text-gray-400">Wizard — à compléter en Plan B</p>
-    </div>
+    <ProcedureList
+      docs={procedure.docs}
+      isLoading={procedure.isLoading}
+      session={session}
+      onNew={() => { setEditDocId(undefined); setScreen('wizard'); }}
+      onEdit={(id) => { setEditDocId(id); setScreen('wizard'); }}
+      onDelete={procedure.deleteProcedure}
+      onExportJSON={handleExportJSON}
+    />
   );
 }
