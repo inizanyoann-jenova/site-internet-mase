@@ -23,13 +23,12 @@ interface ProcessDefinition {
   linkedRealisationIds?: string[];
 }
 
-async function callMistralWithWebSearch(
+async function searchCompanyContext(
   apiKey: string,
   companyName: string,
   sector: string,
   city: string,
-): Promise<{ processes: ProcessDefinition[]; source: string; sourceSummary?: string }> {
-  // Créer un agent Mistral avec web_search
+): Promise<string> {
   const createAgentRes = await fetch('https://api.mistral.ai/v1/agents', {
     method: 'POST',
     headers: {
@@ -37,64 +36,19 @@ async function callMistralWithWebSearch(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'mistral-large-latest',
-      name: 'process-map-generator',
-      instructions: `Tu es un expert en cartographie des processus selon la norme ISO 9001 et le référentiel MASE V2024.
-Ta mission : générer une cartographie des processus MASE complète et réaliste.
-Réponds UNIQUEMENT avec un objet JSON valide, sans markdown.`,
+      model: 'mistral-small-latest',
+      name: 'company-searcher',
+      instructions: 'Tu es un assistant de recherche d\'entreprises. Réponds toujours en français en 3 phrases maximum.',
       tools: [{ type: 'web_search' }],
     }),
   });
 
   if (!createAgentRes.ok) {
-    throw new Error(`Mistral agent creation failed: ${createAgentRes.status}`);
+    throw new Error(`Agent creation failed: ${createAgentRes.status}`);
   }
 
   const agent = await createAgentRes.json();
-  const agentId = agent.id;
-
-  const prompt = `Recherche des informations sur l'entreprise "${companyName}" située à ${city}, qui opère dans le secteur "${sector}".
-
-Utilise web_search pour trouver : son activité principale, ses processus métier, sa taille approximative, ses spécificités.
-
-Ensuite, génère une cartographie des processus MASE complète avec :
-- 2 à 4 processus de PILOTAGE (direction, amélioration continue, etc.)
-- 3 à 6 processus de RÉALISATION dans l'ordre séquentiel de l'activité (avec éléments entrants/sortants)
-- 3 à 5 processus de SUPPORT (RH, matériel, SSE, etc.)
-
-Réponds UNIQUEMENT avec ce JSON (pas de texte avant ou après) :
-{
-  "source": "web_search" ou "sector_model",
-  "sourceSummary": "Résumé de ce que tu as trouvé sur l'entreprise (1 phrase)",
-  "processes": [
-    {
-      "id": "p1",
-      "type": "pilotage",
-      "name": "Nom du processus",
-      "pilotName": "Prénom Nom (à compléter)",
-      "pilotRole": "Titre du poste",
-      "role": "Rôle en une phrase"
-    },
-    {
-      "id": "p4",
-      "type": "realisation",
-      "name": "Nom du processus",
-      "pilotName": "Prénom Nom (à compléter)",
-      "pilotRole": "Titre du poste",
-      "inputElement": "Document ou info reçue pour démarrer",
-      "outputElement": "Document ou résultat produit",
-      "afterProcessId": "id du processus précédent ou null"
-    },
-    {
-      "id": "p8",
-      "type": "support",
-      "name": "Ressources Humaines",
-      "pilotName": "Prénom Nom (à compléter)",
-      "pilotRole": "Responsable RH",
-      "linkedRealisationIds": ["p4", "p5"]
-    }
-  ]
-}`;
+  const agentId: string = agent.id;
 
   const convRes = await fetch('https://api.mistral.ai/v1/conversations', {
     method: 'POST',
@@ -104,46 +58,102 @@ Réponds UNIQUEMENT avec ce JSON (pas de texte avant ou après) :
     },
     body: JSON.stringify({
       agent_id: agentId,
-      inputs: prompt,
+      inputs: `Cherche l'ENTREPRISE (société commerciale, PME, groupe industriel) nommée "${companyName}"${city ? ` basée à ${city}` : ''}, secteur "${sector}".
+
+IMPORTANT : si tu trouves un terme médical, une maladie ou de la biologie, ignore-le complètement et cherche uniquement une société commerciale.
+
+Retourne en 3 phrases maximum :
+- Son activité principale
+- Sa taille approximative (effectif, chiffre d'affaires si disponible)
+- Ses spécificités métier (filiale de X, spécialisée en Y, certifiée Z, etc.)
+
+Si tu ne trouves aucune entreprise commerciale correspondante, réponds uniquement : "entreprise non trouvée".`,
     }),
   });
 
+  // Supprimer l'agent en arrière-plan — ne pas attendre
+  fetch(`https://api.mistral.ai/v1/agents/${agentId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${apiKey}` },
+  }).catch(() => {/* ignore */});
+
   if (!convRes.ok) {
-    throw new Error(`Mistral conversation failed: ${convRes.status}`);
+    throw new Error(`Conversation failed: ${convRes.status}`);
   }
 
   const conv = await convRes.json();
-
-  // Extraire le texte de la réponse
-  let responseText = '';
+  let text = '';
   if (conv.outputs && Array.isArray(conv.outputs)) {
     for (const output of conv.outputs) {
       if (output.type === 'message' && output.role === 'assistant') {
         if (typeof output.content === 'string') {
-          responseText = output.content;
+          text = output.content;
         } else if (Array.isArray(output.content)) {
           for (const chunk of output.content) {
-            if (chunk.type === 'text') responseText += chunk.text ?? '';
+            if (chunk.type === 'text') text += chunk.text ?? '';
           }
         }
       }
     }
   }
 
-  // Nettoyer et parser le JSON
-  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    throw new Error('Réponse Mistral invalide — JSON non trouvé');
-  }
+  if (!text || text.toLowerCase().includes('non trouvée')) return '';
+  return text.trim();
+}
+
+async function generateProcessMap(
+  apiKey: string,
+  companyName: string,
+  sector: string,
+  city: string,
+  context: string,
+): Promise<{ processes: ProcessDefinition[]; source: string; sourceSummary?: string }> {
+  const hasContext = context.length > 0;
+  const contextBlock = hasContext
+    ? `Contexte trouvé sur cette entreprise :\n"${context}"\n\nAdapte les processus à l'activité réelle décrite ci-dessus.\n\n`
+    : '';
+
+  const prompt = `${contextBlock}Génère une cartographie des processus MASE complète pour l'ENTREPRISE "${companyName}"${city ? ` (${city})` : ''}, secteur "${sector}".
+
+Règles :
+- 2 à 3 processus de type "pilotage" (direction, amélioration continue, management SSE...)
+- 3 à 5 processus de type "realisation" dans l'ordre séquentiel de l'activité, avec inputElement, outputElement, afterProcessId (id du précédent, ou null pour le premier)
+- 3 à 4 processus de type "support" (RH, SSE et prévention, matériel, achats...) avec linkedRealisationIds
+
+Réponds avec ce JSON et rien d'autre :
+{
+  "source": "${hasContext ? 'web_search' : 'sector_model'}",
+  "sourceSummary": "Une phrase décrivant l'entreprise ou le modèle utilisé",
+  "processes": [
+    {"id": "p1", "type": "pilotage", "name": "Nom", "pilotName": "(à compléter)", "pilotRole": "Titre", "role": "Rôle en une phrase"},
+    {"id": "p3", "type": "realisation", "name": "Nom", "pilotName": "(à compléter)", "pilotRole": "Titre", "inputElement": "Document reçu", "outputElement": "Document produit", "afterProcessId": null},
+    {"id": "p7", "type": "support", "name": "Nom", "pilotName": "(à compléter)", "pilotRole": "Titre", "linkedRealisationIds": ["p3"]}
+  ]
+}`;
+
+  const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'mistral-large-latest',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3,
+      response_format: { type: 'json_object' },
+    }),
+  });
+
+  if (!res.ok) throw new Error(`Mistral chat completions failed: ${res.status}`);
+
+  const data = await res.json();
+  const text: string = data.choices?.[0]?.message?.content ?? '';
+
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error('JSON non trouvé dans la réponse Mistral');
 
   const parsed = JSON.parse(jsonMatch[0]);
-
-  // Supprimer l'agent temporaire (best effort)
-  await fetch(`https://api.mistral.ai/v1/agents/${agentId}`, {
-    method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${apiKey}` },
-  }).catch(() => {/* ignore */});
-
   return {
     processes: parsed.processes ?? [],
     source: parsed.source ?? 'sector_model',
@@ -170,7 +180,17 @@ Deno.serve(async (req) => {
     const apiKey = Deno.env.get('MISTRAL_API_KEY');
     if (!apiKey) throw new Error('MISTRAL_API_KEY non configuré');
 
-    const result = await callMistralWithWebSearch(apiKey, companyName, sector, city ?? '');
+    // Phase 1 : recherche web avec timeout 20s (indépendante de la Phase 2)
+    const searchTimeout = new Promise<string>((resolve) =>
+      setTimeout(() => resolve(''), 20_000)
+    );
+    const context = await Promise.race([
+      searchCompanyContext(apiKey, companyName, sector, city ?? '').catch(() => ''),
+      searchTimeout,
+    ]);
+
+    // Phase 2 : génération JSON avec le contexte trouvé (ou vide si Phase 1 a échoué)
+    const result = await generateProcessMap(apiKey, companyName, sector, city ?? '', context);
 
     return new Response(
       JSON.stringify(result),
@@ -178,8 +198,6 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Erreur inconnue';
-
-    // Fallback : retourner un modèle vide plutôt qu'une erreur bloquante
     return new Response(
       JSON.stringify({
         processes: [],
