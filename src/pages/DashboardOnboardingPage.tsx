@@ -25,59 +25,49 @@ export default function DashboardOnboardingPage({ session }: Props) {
     }
 
     const check = async () => {
-      const { data, error: queryErr } = await supabase
-        .from('company_members')
-        .select('company_id, company:companies(id, name)')
-        .eq('user_id', session.user.id)
-        .not('accepted_at', 'is', null)
-        .maybeSingle();
-
-      if (queryErr) {
-        console.error('Erreur vérification accès:', queryErr.message);
-        setCheckingAccess(false);
-        return;
-      }
-
-      if (data?.company_id) {
-        setCompanyId(data.company_id);
-        const companyRaw = data.company;
-        const companyName = Array.isArray(companyRaw)
-          ? companyRaw[0]?.name
-          : (companyRaw as { name?: string } | null)?.name;
-        if (companyName && companyName !== 'Mon entreprise') {
-          navigate('/dashboard');
+      try {
+        // Si paiement suspendu, utiliser la RPC qui contourne RLS
+        if (PAYMENT_SUSPENDED) {
+          const { data: companyId, error: rpcErr } = await supabase.rpc('setup_dev_company');
+          if (rpcErr) {
+            console.error('setup_dev_company error:', rpcErr.message);
+          } else if (companyId) {
+            setCompanyId(companyId);
+          }
+          setCheckingAccess(false);
           return;
         }
-        setCheckingAccess(false);
-        return;
-      }
 
-      // Pas de company — créer automatiquement si paiement suspendu
-      if (PAYMENT_SUSPENDED) {
-        const { data: newCompany, error: createErr } = await supabase
-          .from('companies')
-          .insert({
-            name: 'Mon entreprise',
-            admin_user_id: session.user.id,
-            subscription_status: 'active',
-            tool_slug: 'smi-dashboard',
-          })
-          .select('id')
-          .single();
+        const { data, error: queryErr } = await supabase
+          .from('company_members')
+          .select('company_id, company:companies(id, name)')
+          .eq('user_id', session.user.id)
+          .not('accepted_at', 'is', null)
+          .maybeSingle();
 
-        if (!createErr && newCompany) {
-          await supabase.from('company_members').insert({
-            company_id: newCompany.id,
-            user_id: session.user.id,
-            email: session.user.email ?? '',
-            role: 'admin',
-            accepted_at: new Date().toISOString(),
-          });
-          setCompanyId(newCompany.id);
+        if (queryErr) {
+          console.error('Erreur vérification accès:', queryErr.message);
+          setCheckingAccess(false);
+          return;
         }
-      }
 
-      setCheckingAccess(false);
+        if (data?.company_id) {
+          setCompanyId(data.company_id);
+          const companyRaw = data.company;
+          const companyName = Array.isArray(companyRaw)
+            ? companyRaw[0]?.name
+            : (companyRaw as { name?: string } | null)?.name;
+          if (companyName && companyName !== 'Mon entreprise') {
+            navigate('/dashboard');
+            return;
+          }
+        }
+
+        setCheckingAccess(false);
+      } catch (err) {
+        console.error('Erreur inattendue onboarding:', err);
+        setCheckingAccess(false);
+      }
     };
 
     check();
