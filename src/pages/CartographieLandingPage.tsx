@@ -1,5 +1,6 @@
 // src/pages/CartographieLandingPage.tsx
 import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { SessionContext } from '../contexts/SessionContext';
@@ -9,6 +10,7 @@ const PRICE_CENTS = 4900; // 49 €
 
 export default function CartographieLandingPage() {
   const session = useContext(SessionContext) as Session | null;
+  const navigate = useNavigate();
   const [hasPurchase, setHasPurchase] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
@@ -61,7 +63,7 @@ export default function CartographieLandingPage() {
   };
 
   const handleStart = () => {
-    window.location.href = '/cartographie/wizard';
+    navigate('/cartographie/wizard');
   };
 
   return (
