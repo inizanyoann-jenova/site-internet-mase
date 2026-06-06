@@ -164,7 +164,7 @@ export default function HomePage() {
           <div className="flex items-center gap-2">
             <Shield size={22} color="#166534" strokeWidth={2.5} />
             <span style={{ fontWeight: 800, fontSize: 18, color: '#0f172a', letterSpacing: '-0.4px' }}>
-              MASE<span style={{ color: '#166534' }}>Tools</span>
+              Certif<span style={{ color: '#166634' }}>MASE</span>
             </span>
           </div>
           <div className="flex items-center gap-4">
@@ -582,7 +582,7 @@ export default function HomePage() {
           <div>
             <div className="flex items-center gap-2" style={{ marginBottom: 10 }}>
               <Shield size={18} color="#4ade80" strokeWidth={2.5} />
-              <span style={{ fontWeight: 800, fontSize: 16, color: '#fff' }}>MASETools</span>
+              <span style={{ fontWeight: 800, fontSize: 16, color: '#fff' }}>CertifMASE</span>
             </div>
             <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6, margin: 0 }}>
               La plateforme de référence pour la documentation MASE V2024.
@@ -642,7 +642,7 @@ export default function HomePage() {
           }}
         >
           <span style={{ fontSize: 12, color: '#475569' }}>
-            © 2026 MASETools — Tous droits réservés
+            © 2026 CertifMASE — Tous droits réservés
           </span>
           <div className="flex gap-4">
             {['Mentions légales', 'CGU', 'Confidentialité'].map((t) => (
