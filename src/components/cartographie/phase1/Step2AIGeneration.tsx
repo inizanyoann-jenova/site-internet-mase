@@ -37,10 +37,30 @@ export const SECTOR_TEMPLATES: Record<string, ProcessDefinition[]> = {
     { id: 'p8', type: 'support', name: 'Outillage et pièces', pilotName: '(à compléter)', pilotRole: 'Magasinier', linkedRealisationIds: ['p4', 'p5'] },
     { id: 'p9', type: 'support', name: 'SSE et habilitations', pilotName: '(à compléter)', pilotRole: 'Responsable SSE', linkedRealisationIds: ['p3', 'p4', 'p5'] },
   ],
+  electricite: [
+    { id: 'p1', type: 'pilotage', name: 'Direction générale', pilotName: '(à compléter)', pilotRole: 'Dirigeant', role: 'Définir la stratégie et les objectifs de l\'entreprise' },
+    { id: 'p2', type: 'pilotage', name: 'Amélioration continue', pilotName: '(à compléter)', pilotRole: 'Responsable QSE', role: 'Piloter les actions correctives et la démarche MASE' },
+    { id: 'p3', type: 'realisation', name: 'Étude et chiffrage', pilotName: '(à compléter)', pilotRole: 'Chargé d\'affaires', inputElement: 'Appel d\'offre / Demande client', outputElement: 'Devis accepté' },
+    { id: 'p4', type: 'realisation', name: 'Préparation chantier électrique', pilotName: '(à compléter)', pilotRole: 'Chef de chantier', inputElement: 'Devis accepté', outputElement: 'Plan d\'installation + DICT + PDP', afterProcessId: 'p3' },
+    { id: 'p5', type: 'realisation', name: 'Exécution des travaux CFO/CFA', pilotName: '(à compléter)', pilotRole: 'Chef de chantier', inputElement: 'Plan validé + habilitations', outputElement: 'Installation réalisée', afterProcessId: 'p4' },
+    { id: 'p6', type: 'realisation', name: 'Mise en service et réception', pilotName: '(à compléter)', pilotRole: 'Chargé d\'affaires', inputElement: 'Installation réalisée', outputElement: 'PV de réception signé', afterProcessId: 'p5' },
+    { id: 'p7', type: 'support', name: 'Ressources Humaines', pilotName: '(à compléter)', pilotRole: 'RRH', linkedRealisationIds: ['p4', 'p5'] },
+    { id: 'p8', type: 'support', name: 'Matériel et outillage', pilotName: '(à compléter)', pilotRole: 'Responsable matériel', linkedRealisationIds: ['p5'] },
+    { id: 'p9', type: 'support', name: 'SSE et habilitations électriques', pilotName: '(à compléter)', pilotRole: 'Responsable SSE', linkedRealisationIds: ['p3', 'p4', 'p5'] },
+    { id: 'p10', type: 'support', name: 'Achats et fournisseurs', pilotName: '(à compléter)', pilotRole: 'Acheteur', linkedRealisationIds: ['p4', 'p5'] },
+  ],
 };
 
 export function getSectorTemplate(sector: string): ProcessDefinition[] {
   const lower = sector.toLowerCase();
+  if (
+    lower.includes('électricité') || lower.includes('electricit') ||
+    lower.includes('courant fort') || lower.includes('courant faible') ||
+    lower.includes('génie électrique') || lower.includes('genie electrique') ||
+    lower.includes('cfo') || lower.includes('cfa')
+  ) {
+    return SECTOR_TEMPLATES.electricite;
+  }
   if (lower.includes('btp') || lower.includes('chantier') || lower.includes('construction') || lower.includes('travaux')) {
     return SECTOR_TEMPLATES.btp;
   }
