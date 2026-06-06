@@ -21,6 +21,14 @@ export function MatriceTabs() {
       className="sticky top-0 z-50 flex items-center gap-1 bg-white px-5 shadow-sm"
       style={{ borderBottom: '2px solid #dee2e6' }}
     >
+      <a
+        href="/"
+        className="mr-3 flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        style={{ background: 'linear-gradient(135deg, #0d2137, #1f4d7a)', textDecoration: 'none', whiteSpace: 'nowrap' }}
+      >
+        🏠 Accueil
+      </a>
+      <div className="mr-2 h-6 w-px bg-gray-200" />
       {TABS.map(tab => (
         <button
           key={tab.id}

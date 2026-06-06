@@ -163,6 +163,12 @@ export default function App() {
           {/* En-tête global */}
           <div className="flex items-start justify-between gap-4">
             <div>
+              <a
+                href="/"
+                className="mb-2 inline-flex items-center gap-1 text-xs font-semibold text-[var(--mase-muted)] hover:text-[var(--mase-primary)] transition-colors"
+              >
+                ← Accueil
+              </a>
               <h1 className="text-2xl font-bold text-[var(--mase-heading)] sm:text-3xl">
                 Générateur de Politique SSE — MASE
               </h1>
