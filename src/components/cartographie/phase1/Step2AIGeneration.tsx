@@ -3,7 +3,17 @@ import { useState } from 'react';
 import type { StepProps } from './Phase1Wizard';
 import type { ProcessDefinition } from '../../../types/cartographie';
 
-const SECTOR_TEMPLATES: Record<string, ProcessDefinition[]> = {
+export const SECTOR_TEMPLATES: Record<string, ProcessDefinition[]> = {
+  generique: [
+    { id: 'p1', type: 'pilotage', name: 'Direction générale', pilotName: '(à compléter)', pilotRole: 'Dirigeant', role: 'Définir la stratégie et les objectifs' },
+    { id: 'p2', type: 'pilotage', name: 'Amélioration continue', pilotName: '(à compléter)', pilotRole: 'Responsable qualité', role: 'Gérer les non-conformités et actions correctives' },
+    { id: 'p3', type: 'realisation', name: 'Prise en charge de la demande', pilotName: '(à compléter)', pilotRole: 'Responsable commercial', inputElement: 'Demande client', outputElement: 'Commande confirmée' },
+    { id: 'p4', type: 'realisation', name: 'Réalisation de la prestation', pilotName: '(à compléter)', pilotRole: 'Responsable opérationnel', inputElement: 'Commande confirmée', outputElement: 'Prestation réalisée', afterProcessId: 'p3' },
+    { id: 'p5', type: 'realisation', name: 'Livraison et clôture', pilotName: '(à compléter)', pilotRole: 'Responsable opérationnel', inputElement: 'Prestation réalisée', outputElement: 'Livrable validé client', afterProcessId: 'p4' },
+    { id: 'p6', type: 'support', name: 'Ressources Humaines', pilotName: '(à compléter)', pilotRole: 'RRH', linkedRealisationIds: ['p4'] },
+    { id: 'p7', type: 'support', name: 'Moyens et équipements', pilotName: '(à compléter)', pilotRole: 'Responsable matériel', linkedRealisationIds: ['p4'] },
+    { id: 'p8', type: 'support', name: 'SSE et prévention', pilotName: '(à compléter)', pilotRole: 'Responsable SSE', linkedRealisationIds: ['p3', 'p4', 'p5'] },
+  ],
   btp: [
     { id: 'p1', type: 'pilotage', name: 'Direction générale', pilotName: '(à compléter)', pilotRole: 'Dirigeant', role: "Définir la stratégie et les objectifs de l'entreprise" },
     { id: 'p2', type: 'pilotage', name: 'Amélioration continue', pilotName: '(à compléter)', pilotRole: 'Responsable SSE', role: 'Piloter les actions correctives et préventives' },
@@ -29,7 +39,7 @@ const SECTOR_TEMPLATES: Record<string, ProcessDefinition[]> = {
   ],
 };
 
-function getSectorTemplate(sector: string): ProcessDefinition[] {
+export function getSectorTemplate(sector: string): ProcessDefinition[] {
   const lower = sector.toLowerCase();
   if (lower.includes('btp') || lower.includes('chantier') || lower.includes('construction') || lower.includes('travaux')) {
     return SECTOR_TEMPLATES.btp;
@@ -37,7 +47,7 @@ function getSectorTemplate(sector: string): ProcessDefinition[] {
   if (lower.includes('maintenance') || lower.includes('entretien')) {
     return SECTOR_TEMPLATES.maintenance;
   }
-  return SECTOR_TEMPLATES.btp;
+  return SECTOR_TEMPLATES.generique;
 }
 
 export default function Step2AIGeneration({ state, update, onNext, onBack, isSaving, cartographie }: StepProps) {
@@ -49,11 +59,17 @@ export default function Step2AIGeneration({ state, update, onNext, onBack, isSav
     setIsGenerating(true);
     setAiError(null);
     try {
-      const result = await cartographie.callGenerateProcessMap({
-        companyName: state.companyName,
-        sector: state.sector,
-        city: state.city,
-      });
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout')), 75_000),
+      );
+      const result = await Promise.race([
+        cartographie.callGenerateProcessMap({
+          companyName: state.companyName,
+          sector: state.sector,
+          city: state.city,
+        }),
+        timeout,
+      ]);
       update({
         processes: result.processes.length > 0 ? result.processes : getSectorTemplate(state.sector),
         aiSource: result.source,
@@ -61,7 +77,7 @@ export default function Step2AIGeneration({ state, update, onNext, onBack, isSav
       });
       setGenerated(true);
     } catch {
-      setAiError('La génération IA a échoué. Utilisation du modèle secteur.');
+      setAiError('La génération IA a échoué ou a expiré. Utilisation du modèle secteur.');
       update({ processes: getSectorTemplate(state.sector), aiSource: 'sector_model' });
       setGenerated(true);
     } finally {
