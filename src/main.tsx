@@ -38,6 +38,8 @@ import CartographieLandingPage from './pages/CartographieLandingPage';
 import CartographieWizardPage from './pages/CartographieWizardPage';
 import ProceduresLandingPage from './pages/ProceduresLandingPage';
 import ProceduresWizardPage from './pages/ProceduresWizardPage';
+import MoLandingPage from './pages/MoLandingPage';
+import MoWizardPage from './pages/MoWizardPage';
 import './index.css';
 
 function Root() {
@@ -85,6 +87,9 @@ function Root() {
           <Route path="/cartographie/wizard" element={<CartographieWizardPage />} />
           <Route path="/procedures" element={<ProceduresLandingPage />} />
           <Route path="/procedures/wizard" element={<ProceduresWizardPage />} />
+          <Route path="/modes-operatoires" element={<MoLandingPage />} />
+          <Route path="/modes-operatoires/nouveau" element={<MoWizardPage />} />
+          <Route path="/modes-operatoires/:id" element={<MoWizardPage />} />
         </Routes>
       </BrowserRouter>
     </SessionContext.Provider>
