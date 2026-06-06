@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Session } from '@supabase/supabase-js';
 import { SessionContext } from '../contexts/SessionContext';
 import { supabase } from '../lib/supabase';
+import { PAYMENT_SUSPENDED } from '../lib/paymentConfig';
 import { useCartographie } from '../hooks/useCartographie';
 import IntroductionScreen from '../components/cartographie/intro/IntroductionScreen';
 import Phase1Wizard from '../components/cartographie/phase1/Phase1Wizard';
@@ -18,6 +19,10 @@ export default function CartographieWizardPage() {
 
   useEffect(() => {
     if (!session) { navigate('/cartographie'); return; }
+    if (PAYMENT_SUSPENDED) {
+      setScreen(cartographie.map?.phase1Completed ? 'phase1' : 'intro');
+      return;
+    }
     supabase
       .from('purchases')
       .select('id')
