@@ -17,6 +17,32 @@ export function DashboardGuard({ session, children }: Props) {
     return <Navigate to="/" replace />;
   }
 
+  // En mode dev, on bypass le check company et on fournit un objet mock
+  if (PAYMENT_SUSPENDED) {
+    const devCompany: Company = company ?? {
+      id: 'dev',
+      name: session.user.email?.split('@')[0] ?? 'Mon entreprise',
+      siret: null,
+      subscription_status: 'active',
+      tool_slug: 'smi-dashboard',
+      admin_user_id: session.user.id,
+    };
+    const devMembership: CompanyMember = membership ?? {
+      id: 'dev',
+      company_id: devCompany.id,
+      user_id: session.user.id,
+      email: session.user.email ?? '',
+      role: 'admin',
+      accepted_at: new Date().toISOString(),
+      company: devCompany,
+    };
+    return (
+      <DashboardLayout company={devCompany} membership={devMembership}>
+        {children}
+      </DashboardLayout>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f5f5f3]">
@@ -50,7 +76,7 @@ export function DashboardGuard({ session, children }: Props) {
     return <Navigate to="/dashboard/onboarding" replace />;
   }
 
-  if (!PAYMENT_SUSPENDED && company.subscription_status === 'canceled') {
+  if (company.subscription_status === 'canceled') {
     return <Navigate to="/dashboard/acheter" replace />;
   }
 
