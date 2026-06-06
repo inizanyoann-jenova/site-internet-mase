@@ -96,8 +96,9 @@ export default function Step2AIGeneration({ state, update, onNext, onBack, isSav
         aiSourceSummary: result.sourceSummary,
       });
       setGenerated(true);
-    } catch {
-      setAiError('La génération IA a échoué ou a expiré. Utilisation du modèle secteur.');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'La génération IA a échoué. Utilisation du modèle secteur.';
+      setAiError(msg);
       update({ processes: getSectorTemplate(state.sector), aiSource: 'sector_model' });
       setGenerated(true);
     } finally {
