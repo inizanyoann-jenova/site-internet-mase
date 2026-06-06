@@ -6,7 +6,8 @@ alter table companies
   add column if not exists telephone text,
   add column if not exists logo_url  text;
 
--- Politique RLS : l'admin peut modifier sa company
+-- Politique RLS : l'admin peut modifier sa company (drop si déjà créée par 20260602000011)
+drop policy if exists "Admin peut modifier sa company" on companies;
 create policy "Admin peut modifier sa company"
   on companies for update
   using (admin_user_id = auth.uid())

@@ -44,18 +44,22 @@ CREATE TABLE IF NOT EXISTS public.process_sheets (
 -- RLS process_maps
 ALTER TABLE public.process_maps ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "process_maps: lecture utilisateur" ON public.process_maps;
 CREATE POLICY "process_maps: lecture utilisateur"
   ON public.process_maps FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "process_maps: insertion utilisateur" ON public.process_maps;
 CREATE POLICY "process_maps: insertion utilisateur"
   ON public.process_maps FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "process_maps: mise à jour utilisateur" ON public.process_maps;
 CREATE POLICY "process_maps: mise à jour utilisateur"
   ON public.process_maps FOR UPDATE
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "process_maps: suppression utilisateur" ON public.process_maps;
 CREATE POLICY "process_maps: suppression utilisateur"
   ON public.process_maps FOR DELETE
   USING (auth.uid() = user_id);
@@ -63,6 +67,7 @@ CREATE POLICY "process_maps: suppression utilisateur"
 -- RLS process_sheets (via JOIN sur process_maps)
 ALTER TABLE public.process_sheets ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "process_sheets: lecture utilisateur" ON public.process_sheets;
 CREATE POLICY "process_sheets: lecture utilisateur"
   ON public.process_sheets FOR SELECT
   USING (
@@ -73,6 +78,7 @@ CREATE POLICY "process_sheets: lecture utilisateur"
     )
   );
 
+DROP POLICY IF EXISTS "process_sheets: insertion utilisateur" ON public.process_sheets;
 CREATE POLICY "process_sheets: insertion utilisateur"
   ON public.process_sheets FOR INSERT
   WITH CHECK (
@@ -83,6 +89,7 @@ CREATE POLICY "process_sheets: insertion utilisateur"
     )
   );
 
+DROP POLICY IF EXISTS "process_sheets: mise à jour utilisateur" ON public.process_sheets;
 CREATE POLICY "process_sheets: mise à jour utilisateur"
   ON public.process_sheets FOR UPDATE
   USING (
@@ -93,6 +100,7 @@ CREATE POLICY "process_sheets: mise à jour utilisateur"
     )
   );
 
+DROP POLICY IF EXISTS "process_sheets: suppression utilisateur" ON public.process_sheets;
 CREATE POLICY "process_sheets: suppression utilisateur"
   ON public.process_sheets FOR DELETE
   USING (
@@ -109,10 +117,12 @@ RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN NEW.updated_at = now(); RETURN NEW; END;
 $$;
 
+DROP TRIGGER IF EXISTS process_maps_updated_at ON public.process_maps;
 CREATE TRIGGER process_maps_updated_at
   BEFORE UPDATE ON public.process_maps
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
+DROP TRIGGER IF EXISTS process_sheets_updated_at ON public.process_sheets;
 CREATE TRIGGER process_sheets_updated_at
   BEFORE UPDATE ON public.process_sheets
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();

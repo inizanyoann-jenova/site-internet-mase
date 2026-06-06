@@ -7,3 +7,4 @@ supabase/.temp/
 .superpowers/
 .vscode/
 clear_cache*.py
+*.html

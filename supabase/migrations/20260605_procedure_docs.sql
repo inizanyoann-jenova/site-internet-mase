@@ -30,6 +30,7 @@ create table if not exists procedure_docs (
 
 alter table procedure_docs enable row level security;
 
+drop policy if exists "Users manage own procedure_docs" on procedure_docs;
 create policy "Users manage own procedure_docs"
   on procedure_docs for all
   using (user_id = auth.uid())
