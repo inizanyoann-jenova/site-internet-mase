@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { PAYMENT_SUSPENDED } from '../lib/paymentConfig';
 
 export interface AccessState {
   hasPurchase: boolean;
@@ -18,6 +19,11 @@ export function useAccess(session: Session | null): AccessState & { refetch: () 
   const fetch = useCallback(async () => {
     if (!session) {
       setState({ hasPurchase: false, isLoading: false, savedAnswers: null });
+      return;
+    }
+
+    if (PAYMENT_SUSPENDED) {
+      setState({ hasPurchase: true, isLoading: false, savedAnswers: null });
       return;
     }
 

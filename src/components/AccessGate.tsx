@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { redirectToCheckout } from '../lib/stripe';
+import { PAYMENT_SUSPENDED } from '../lib/paymentConfig';
 
 interface Props {
   session: Session | null;
@@ -11,6 +12,10 @@ interface Props {
 export function AccessGate({ session, onClose }: Props) {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (PAYMENT_SUSPENDED && session) onClose();
+  }, [session, onClose]);
 
   const handleSignIn = async () => {
     await supabase.auth.signInWithOAuth({

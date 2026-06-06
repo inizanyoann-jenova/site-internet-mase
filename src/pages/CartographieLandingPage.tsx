@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { SessionContext } from '../contexts/SessionContext';
+import { PAYMENT_SUSPENDED } from '../lib/paymentConfig';
 
 const PRICE_CENTS = 4900; // 49 €
 
@@ -14,6 +15,11 @@ export default function CartographieLandingPage() {
 
   useEffect(() => {
     if (!session) { setCheckingAccess(false); return; }
+    if (PAYMENT_SUSPENDED) {
+      setHasPurchase(true);
+      setCheckingAccess(false);
+      return;
+    }
     supabase
       .from('purchases')
       .select('id')

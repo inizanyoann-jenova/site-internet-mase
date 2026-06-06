@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import type { Session } from '@supabase/supabase-js';
 import { useCompany } from '../../hooks/useCompany';
 import { DashboardLayout } from './DashboardLayout';
+import { PAYMENT_SUSPENDED } from '../../lib/paymentConfig';
 
 interface Props {
   session: Session | null;
@@ -49,7 +50,7 @@ export function DashboardGuard({ session, children }: Props) {
     return <Navigate to="/dashboard/onboarding" replace />;
   }
 
-  if (company.subscription_status === 'canceled') {
+  if (!PAYMENT_SUSPENDED && company.subscription_status === 'canceled') {
     return <Navigate to="/dashboard/acheter" replace />;
   }
 

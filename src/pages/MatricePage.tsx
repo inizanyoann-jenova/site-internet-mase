@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { redirectToCheckout } from '../lib/stripe';
+import { PAYMENT_SUSPENDED } from '../lib/paymentConfig';
 import { MatriceProvider } from '../components/matrice/MatriceContext';
 import { MatriceHeader } from '../components/matrice/MatriceHeader';
 import { MatriceTabs } from '../components/matrice/MatriceTabs';
@@ -46,6 +47,10 @@ export default function MatricePage() {
     checkInflight.current = true;
     setLoading(true);
     try {
+      if (PAYMENT_SUSPENDED) {
+        setHasPurchase(true);
+        return;
+      }
       const { data } = await supabase
         .from('purchases')
         .select('id')

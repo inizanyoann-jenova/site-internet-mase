@@ -4,6 +4,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { AuthButton } from '../components/AuthButton';
+import { PAYMENT_SUSPENDED } from '../lib/paymentConfig';
 
 interface Props {
   session: Session | null;
@@ -173,7 +174,23 @@ export default function DashboardPurchasePage({ session }: Props) {
         </div>
 
         <div className="mt-8">
-          {!session ? (
+          {PAYMENT_SUSPENDED ? (
+            <div className="rounded-2xl bg-green-50 border border-green-200 p-6 text-center">
+              <p className="text-sm font-semibold text-green-800">
+                Accès gratuit pendant la phase de développement
+              </p>
+              <p className="mt-1 text-xs text-green-600">
+                Le paiement sera activé à la sortie officielle du site.
+              </p>
+              <button
+                onClick={() => navigate('/dashboard/onboarding')}
+                className="mt-4 w-full rounded-full py-3 text-sm font-bold text-white transition hover:opacity-90"
+                style={{ backgroundColor: 'var(--mase-primary)' }}
+              >
+                Accéder au Dashboard →
+              </button>
+            </div>
+          ) : !session ? (
             <div className="text-center">
               <p className="mb-4 text-sm text-slate-600">
                 Connectez-vous pour accéder au paiement
@@ -198,7 +215,7 @@ export default function DashboardPurchasePage({ session }: Props) {
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-400">
-          Paiement sécurisé par Stripe · Facture disponible après paiement
+          {PAYMENT_SUSPENDED ? 'Paiement temporairement suspendu' : 'Paiement sécurisé par Stripe · Facture disponible après paiement'}
         </p>
       </div>
     </div>
