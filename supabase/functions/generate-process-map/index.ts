@@ -97,7 +97,7 @@ Si tu ne trouves aucune entreprise commerciale correspondante, réponds uniqueme
     }
   }
 
-  if (!text || text.toLowerCase().includes('non trouvée')) return '';
+  if (!text || text.toLowerCase().includes('non trouvée') || text.toLowerCase().includes('not found')) return '';
   return text.trim();
 }
 
@@ -109,8 +109,9 @@ async function generateProcessMap(
   context: string,
 ): Promise<{ processes: ProcessDefinition[]; source: string; sourceSummary?: string }> {
   const hasContext = context.length > 0;
+  const safeContext = context.slice(0, 500);
   const contextBlock = hasContext
-    ? `Contexte trouvé sur cette entreprise :\n"${context}"\n\nAdapte les processus à l'activité réelle décrite ci-dessus.\n\n`
+    ? `Contexte trouvé sur cette entreprise :\n"${safeContext}"\n\nAdapte les processus à l'activité réelle décrite ci-dessus.\n\n`
     : '';
 
   const prompt = `${contextBlock}Génère une cartographie des processus MASE complète pour l'ENTREPRISE "${companyName}"${city ? ` (${city})` : ''}, secteur "${sector}".
@@ -190,7 +191,13 @@ Deno.serve(async (req) => {
     ]);
 
     // Phase 2 : génération JSON avec le contexte trouvé (ou vide si Phase 1 a échoué)
-    const result = await generateProcessMap(apiKey, companyName, sector, city ?? '', context);
+    const generateTimeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout génération IA')), 45_000)
+    );
+    const result = await Promise.race([
+      generateProcessMap(apiKey, companyName, sector, city ?? '', context),
+      generateTimeout,
+    ]);
 
     return new Response(
       JSON.stringify(result),
