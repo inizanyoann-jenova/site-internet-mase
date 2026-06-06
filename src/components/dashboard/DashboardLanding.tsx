@@ -146,7 +146,7 @@ export function DashboardLanding() {
         style={{ backgroundColor: 'var(--mase-primary)' }}
       >
         <span className="text-xs text-white/40">
-          © 2026 MASE Tools — Toute la documentation certifiante.
+          © 2026 CertifMASE — Toute la documentation certifiante.
         </span>
       </footer>
 
