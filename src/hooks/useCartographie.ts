@@ -57,7 +57,7 @@ function mapToDbRow(map: Partial<ProcessMap>, userId: string): Record<string, un
 
 export function useCartographie(session: Session | null): UseCartographieReturn {
   const [map, setMap] = useState<ProcessMap | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchMap = useCallback(async () => {

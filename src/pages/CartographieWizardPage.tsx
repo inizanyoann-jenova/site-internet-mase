@@ -1,5 +1,5 @@
 // src/pages/CartographieWizardPage.tsx
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Session } from '@supabase/supabase-js';
 import { SessionContext } from '../contexts/SessionContext';
@@ -16,10 +16,14 @@ export default function CartographieWizardPage() {
   const navigate = useNavigate();
   const [screen, setScreen] = useState<Screen>('loading');
   const cartographie = useCartographie(session);
+  const screenSet = useRef(false);
 
   useEffect(() => {
     if (!session) { navigate('/cartographie'); return; }
+    if (screenSet.current) return;
     if (PAYMENT_SUSPENDED) {
+      if (cartographie.isLoading) return;
+      screenSet.current = true;
       setScreen(cartographie.map?.phase1Completed ? 'phase1' : 'intro');
       return;
     }
@@ -31,10 +35,12 @@ export default function CartographieWizardPage() {
       .limit(1)
       .maybeSingle()
       .then(({ data }) => {
+        if (screenSet.current) return;
+        screenSet.current = true;
         if (!data) { setScreen('no-access'); return; }
         setScreen(cartographie.map?.phase1Completed ? 'phase1' : 'intro');
       });
-  }, [session, navigate, cartographie.map]);
+  }, [session, navigate, cartographie.map, cartographie.isLoading]);
 
   if (screen === 'loading') {
     return (
