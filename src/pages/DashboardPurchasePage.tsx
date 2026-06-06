@@ -75,6 +75,10 @@ export default function DashboardPurchasePage({ session }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (PAYMENT_SUSPENDED) {
+      navigate('/dashboard/onboarding', { replace: true });
+      return;
+    }
     if (!session) return;
     // Redirect if user already has an active company
     const check = async () => {
