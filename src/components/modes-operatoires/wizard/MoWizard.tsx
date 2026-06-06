@@ -6,6 +6,9 @@ import MoStep1General from './MoStep1General';
 import MoStep2SSE from './MoStep2SSE';
 import MoStep3EPI from './MoStep3EPI';
 import MoStep4Phases from './MoStep4Phases';
+import MoStep5Urgences from './MoStep5Urgences';
+import MoStep6Approbation from './MoStep6Approbation';
+import MoStep7Export from './MoStep7Export';
 
 interface Props {
   session: Session;
@@ -135,39 +138,9 @@ export default function MoWizard({ session, mo, editDocId, onDone }: Props) {
         {step === 2 && <MoStep2SSE {...stepProps} />}
         {step === 3 && <MoStep3EPI {...stepProps} />}
         {step === 4 && <MoStep4Phases {...stepProps} />}
-        {step === 5 && (
-          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-400">
-            Étape 5 — Urgences (Plan C)
-            <div className="mt-4 flex justify-between">
-              <button onClick={goBack} className="rounded-xl px-4 py-2 text-sm border border-gray-200">← Précédent</button>
-              <button onClick={() => saveAndNext()} disabled={isSaving} className="rounded-xl px-4 py-2 text-sm font-bold text-white" style={{ backgroundColor: 'var(--mase-primary)' }}>
-                {isSaving ? 'Sauvegarde…' : 'Suivant →'}
-              </button>
-            </div>
-          </div>
-        )}
-        {step === 6 && (
-          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-400">
-            Étape 6 — Approbation (Plan C)
-            <div className="mt-4 flex justify-between">
-              <button onClick={goBack} className="rounded-xl px-4 py-2 text-sm border border-gray-200">← Précédent</button>
-              <button onClick={() => saveAndNext()} disabled={isSaving} className="rounded-xl px-4 py-2 text-sm font-bold text-white" style={{ backgroundColor: 'var(--mase-primary)' }}>
-                {isSaving ? 'Sauvegarde…' : 'Suivant →'}
-              </button>
-            </div>
-          </div>
-        )}
-        {step === 7 && (
-          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-400">
-            Étape 7 — Export & Aperçu (Plan C)
-            <div className="mt-4 flex justify-between">
-              <button onClick={goBack} className="rounded-xl px-4 py-2 text-sm border border-gray-200">← Précédent</button>
-              <button onClick={() => saveAndNext()} disabled={isSaving} className="rounded-xl px-4 py-2 text-sm font-bold text-white" style={{ backgroundColor: 'var(--mase-primary)' }}>
-                {isSaving ? 'Sauvegarde…' : 'Terminer'}
-              </button>
-            </div>
-          </div>
-        )}
+        {step === 5 && <MoStep5Urgences {...stepProps} />}
+        {step === 6 && <MoStep6Approbation {...stepProps} />}
+        {step === 7 && <MoStep7Export {...stepProps} />}
       </div>
     </div>
   );

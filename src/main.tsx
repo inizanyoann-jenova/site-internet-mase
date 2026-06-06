@@ -40,6 +40,7 @@ import ProceduresLandingPage from './pages/ProceduresLandingPage';
 import ProceduresWizardPage from './pages/ProceduresWizardPage';
 import MoLandingPage from './pages/MoLandingPage';
 import MoWizardPage from './pages/MoWizardPage';
+import LogiTechnicienTerrainPage from './pages/LogiTechnicienTerrainPage';
 import './index.css';
 
 function Root() {
@@ -89,6 +90,7 @@ function Root() {
           <Route path="/procedures/wizard" element={<ProceduresWizardPage />} />
           <Route path="/modes-operatoires" element={<MoLandingPage />} />
           <Route path="/modes-operatoires/nouveau" element={<MoWizardPage />} />
+          <Route path="/modes-operatoires/:id/terrain" element={<LogiTechnicienTerrainPage />} />
           <Route path="/modes-operatoires/:id" element={<MoWizardPage />} />
         </Routes>
       </BrowserRouter>
