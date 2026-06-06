@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { PAYMENT_SUSPENDED } from '../lib/paymentConfig';
 
 export interface Company {
   id: string;
@@ -45,6 +46,11 @@ export function useCompany(session: Session | null): CompanyState & { refetch: (
     setState((prev) => ({ ...prev, isLoading: true }));
 
     try {
+      // En mode développement, s'assurer que la company existe via RPC (contourne RLS)
+      if (PAYMENT_SUSPENDED) {
+        await supabase.rpc('setup_dev_company');
+      }
+
       const { data, error } = await supabase
         .from('company_members')
         .select('*, company:companies(*)')

@@ -26,15 +26,15 @@ export default function DashboardOnboardingPage({ session }: Props) {
 
     const check = async () => {
       try {
-        // Si paiement suspendu, utiliser la RPC qui contourne RLS
+        // Si paiement suspendu, créer la company via RPC et aller directement au dashboard
         if (PAYMENT_SUSPENDED) {
-          const { data: companyId, error: rpcErr } = await supabase.rpc('setup_dev_company');
+          const { data: newCompanyId, error: rpcErr } = await supabase.rpc('setup_dev_company');
           if (rpcErr) {
             console.error('setup_dev_company error:', rpcErr.message);
-          } else if (companyId) {
-            setCompanyId(companyId);
+            setCheckingAccess(false);
+          } else {
+            navigate('/dashboard', { replace: true });
           }
-          setCheckingAccess(false);
           return;
         }
 
