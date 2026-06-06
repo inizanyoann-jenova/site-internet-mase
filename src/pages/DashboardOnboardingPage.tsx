@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { PAYMENT_SUSPENDED } from '../lib/paymentConfig';
 
 interface Props {
   session: Session | null;
@@ -47,7 +48,35 @@ export default function DashboardOnboardingPage({ session }: Props) {
           navigate('/dashboard');
           return;
         }
+        setCheckingAccess(false);
+        return;
       }
+
+      // Pas de company — créer automatiquement si paiement suspendu
+      if (PAYMENT_SUSPENDED) {
+        const { data: newCompany, error: createErr } = await supabase
+          .from('companies')
+          .insert({
+            name: 'Mon entreprise',
+            admin_user_id: session.user.id,
+            subscription_status: 'active',
+            tool_slug: 'smi-dashboard',
+          })
+          .select('id')
+          .single();
+
+        if (!createErr && newCompany) {
+          await supabase.from('company_members').insert({
+            company_id: newCompany.id,
+            user_id: session.user.id,
+            email: session.user.email ?? '',
+            role: 'admin',
+            accepted_at: new Date().toISOString(),
+          });
+          setCompanyId(newCompany.id);
+        }
+      }
+
       setCheckingAccess(false);
     };
 
@@ -63,7 +92,7 @@ export default function DashboardOnboardingPage({ session }: Props) {
 
     const { error: updateErr } = await supabase
       .from('companies')
-      .update({ name: name.trim() })
+      .update({ name: name.trim(), ...(siret.trim() ? { siret: siret.trim() } : {}) })
       .eq('id', companyId);
 
     setLoading(false);
